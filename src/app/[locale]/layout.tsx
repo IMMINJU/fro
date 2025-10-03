@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation'
 import '../globals.css'
 import QueryProvider from '@/components/providers/query-provider'
 import { locales } from '@/i18n'
-import { GlobalLoading } from '@/components/loading/global-loading'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -45,7 +44,6 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
             {children}
-            <GlobalLoading />
           </QueryProvider>
         </NextIntlClientProvider>
       </body>
