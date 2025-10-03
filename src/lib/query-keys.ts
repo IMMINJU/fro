@@ -1,16 +1,18 @@
 /**
  * Query Key Factory
  * Centralized query key management for consistent caching
+ *
+ * Note: Individual query keys are now separated by namespace
+ * See: src/lib/query-keys/
  */
 
+import { cloudKeys } from './query-keys/clouds.keys'
+
 export const queryKeys = {
-  // Cloud queries
-  clouds: {
-    all: ['clouds'] as const,
-    lists: () => [...queryKeys.clouds.all, 'list'] as const,
-    list: (filters?: Record<string, any>) =>
-      [...queryKeys.clouds.lists(), { filters }] as const,
-  },
+  clouds: cloudKeys,
+  // Add more API namespaces here as they are created
+  // users: userKeys,
+  // policies: policyKeys,
 } as const
 
 // Type helpers for query keys
