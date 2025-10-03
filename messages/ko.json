@@ -67,7 +67,8 @@
     "date": "날짜",
     "basicInfo": "기본 정보",
     "scheduleSettings": "스케줄 설정",
-    "eventSource": "이벤트 소스"
+    "eventSource": "이벤트 소스",
+    "name": "클라우드 이름"
   },
   "validation": {
     "required": "이 필드는 필수입니다",

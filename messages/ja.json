@@ -67,7 +67,8 @@
     "date": "日付",
     "basicInfo": "基本情報",
     "scheduleSettings": "スケジュール設定",
-    "eventSource": "イベントソース"
+    "eventSource": "イベントソース",
+    "name": "クラウド名"
   },
   "validation": {
     "required": "この項目は必須です",

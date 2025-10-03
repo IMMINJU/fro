@@ -67,7 +67,8 @@
     "date": "Date",
     "basicInfo": "Basic Information",
     "scheduleSettings": "Schedule Settings",
-    "eventSource": "Event Source"
+    "eventSource": "Event Source",
+    "name": "Cloud Name"
   },
   "validation": {
     "required": "This field is required",
