@@ -96,6 +96,7 @@ export const sampleCloudData: Cloud[] = [
     id: 'cloud-005',
     provider: 'AWS',
     name: 'Staging Environment',
+    cloudGroupName: ['Staging'],
     eventProcessEnabled: false,
     userActivityEnabled: false,
     scheduleScanEnabled: true,
