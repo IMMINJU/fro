@@ -1,5 +1,3 @@
-import { apiClient } from '../client'
-import { API_ENDPOINTS } from '../config'
 import { ListResponse, PaginationParams, FilterParams } from '../types'
 import {
   Cloud,
@@ -7,15 +5,25 @@ import {
   CloudUpdateRequest,
 } from '@/types/types'
 
+/**
+ * Cloud Service (Mock Data Only)
+ * Simplified service for development with local sample data
+ */
 export class CloudService {
-  // Get paginated list of clouds
+  private async delay(): Promise<void> {
+    return new Promise(resolve =>
+      setTimeout(resolve, Math.random() * 500)
+    )
+  }
+
+  /**
+   * Get paginated list of clouds
+   */
   async list(
     params?: PaginationParams & FilterParams
   ): Promise<ListResponse<Cloud>> {
-    // For now, return mock data matching the ListResponse interface
     await this.delay()
 
-    // Import sample data
     const { sampleCloudData } = await import('@/data/sample-data')
 
     const page = params?.page || 1
@@ -23,7 +31,6 @@ export class CloudService {
     const search = params?.search
     const provider = params?.provider
 
-    // Filter data based on search and provider
     let filteredData = sampleCloudData
 
     if (search) {
@@ -39,7 +46,6 @@ export class CloudService {
       )
     }
 
-    // Paginate
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
     const paginatedData = filteredData.slice(startIndex, endIndex)
@@ -54,12 +60,12 @@ export class CloudService {
     }
   }
 
-  // Get single cloud by ID
+  /**
+   * Get single cloud by ID
+   */
   async get(id: string): Promise<Cloud> {
-    // Mock delay for demonstration
     await this.delay()
 
-    // Return mock data with masked credentials
     const mockCloud: Cloud = {
       id,
       provider: 'AWS',
@@ -88,7 +94,9 @@ export class CloudService {
     return mockCloud
   }
 
-  // Create new cloud
+  /**
+   * Create new cloud
+   */
   async create(data: CloudCreateRequest): Promise<Cloud> {
     await this.delay()
 
@@ -102,7 +110,9 @@ export class CloudService {
     return newCloud
   }
 
-  // Update existing cloud
+  /**
+   * Update existing cloud
+   */
   async update(id: string, data: Partial<CloudUpdateRequest>): Promise<Cloud> {
     await this.delay()
 
@@ -116,12 +126,13 @@ export class CloudService {
     return updatedCloud
   }
 
+  /**
+   * Delete cloud
+   */
+  async delete(id: string): Promise<void> {
+    await this.delay()
 
-  // Private helper for mock delay
-  private delay(): Promise<void> {
-    return new Promise(resolve =>
-      setTimeout(resolve, Math.random() * 500)
-    )
+    console.log('Deleting cloud:', id)
   }
 }
 

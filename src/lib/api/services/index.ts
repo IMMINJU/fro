@@ -15,6 +15,3 @@ export {
   NetworkError,
   ValidationError,
 } from '../types'
-
-// Export client
-export { apiClient } from '../client'
