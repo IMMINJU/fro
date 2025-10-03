@@ -40,6 +40,9 @@ import { FormSkeleton } from '@/components/loading/form-skeleton'
 import { ButtonLoading } from '@/components/loading/global-loading'
 import { useCreateCloud, useUpdateCloud } from '@/hooks/queries'
 import { useState } from 'react'
+import { getStepValidationStatus } from '@/lib/validation/step-validation'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
 // Base form schema (provider-agnostic)
 const baseFormSchema = z.object({
@@ -318,11 +321,14 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
                   <Label htmlFor="name">{tCloud('name')} *</Label>
                   <Input
                     id="name"
-                    {...register('name')}
+                    {...register('name', {
+                      onBlur: () => form.trigger('name')
+                    })}
                     placeholder={`${t('enter')} ${tCloud('name').toLowerCase()}`}
+                    className={errors.name ? 'border-red-500' : ''}
                   />
                   {errors.name && (
-                    <p className="text-sm text-red-500">{errors.name.message}</p>
+                    <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
                   )}
                 </div>
 
@@ -508,6 +514,8 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
               mode={mode}
               isLoading={createMutation.isPending || updateMutation.isPending}
               onCancel={() => onOpenChange(false)}
+              formData={watch()}
+              errors={errors}
             />
           </StepWizard>
         </form>
@@ -520,45 +528,82 @@ function WizardFooter({
   mode,
   isLoading,
   onCancel,
+  formData,
+  errors,
 }: {
   mode: 'create' | 'edit'
   isLoading: boolean
   onCancel: () => void
+  formData: Record<string, any>
+  errors: any
 }) {
   const t = useTranslations('common')
   const { currentStep, goToPrevious, goToNext, isFirstStep, isLastStep } = useStepWizard()
+  const [showValidationError, setShowValidationError] = useState(false)
+
+  // Get validation status for current step
+  const validationStatus = getStepValidationStatus(currentStep, formData, errors)
+
+  const handleNext = () => {
+    if (!validationStatus.isValid) {
+      setShowValidationError(true)
+      return
+    }
+    setShowValidationError(false)
+    goToNext()
+  }
+
+  // Reset validation error when step changes
+  useEffect(() => {
+    setShowValidationError(false)
+  }, [currentStep])
 
   return (
-    <DialogFooter className="mt-6">
-      <div className="flex justify-between w-full">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={isFirstStep ? onCancel : goToPrevious}
-        >
-          {isFirstStep ? t('cancel') : t('previous')}
-        </Button>
+    <>
+      {/* Validation Error Alert */}
+      {showValidationError && !validationStatus.isValid && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {validationStatus.missingFields.length > 0
+              ? `Please fill in required fields: ${validationStatus.missingFields.join(', ')}`
+              : 'Please fix the errors before proceeding'}
+          </AlertDescription>
+        </Alert>
+      )}
 
-        {isLastStep ? (
-          <ButtonLoading
-            type="submit"
-            isLoading={isLoading}
-            variant="default"
-            className="min-w-[100px]"
-          >
-            {mode === 'create' ? t('create') : t('save')}
-          </ButtonLoading>
-        ) : (
+      <DialogFooter className="mt-6">
+        <div className="flex justify-between w-full">
           <Button
             type="button"
-            onClick={goToNext}
-            variant="default"
-            className="min-w-[100px]"
+            variant="outline"
+            onClick={isFirstStep ? onCancel : goToPrevious}
           >
-            {t('next')}
+            {isFirstStep ? t('cancel') : t('previous')}
           </Button>
-        )}
-      </div>
-    </DialogFooter>
+
+          {isLastStep ? (
+            <ButtonLoading
+              type="submit"
+              isLoading={isLoading}
+              variant="default"
+              className="min-w-[100px]"
+            >
+              {mode === 'create' ? t('create') : t('save')}
+            </ButtonLoading>
+          ) : (
+            <Button
+              type="button"
+              onClick={handleNext}
+              variant="default"
+              className="min-w-[100px]"
+              disabled={!validationStatus.isValid}
+            >
+              {t('next')}
+            </Button>
+          )}
+        </div>
+      </DialogFooter>
+    </>
   )
 }

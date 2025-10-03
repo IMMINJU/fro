@@ -1,0 +1,290 @@
+'use client'
+
+import { ReactNode, useState, useEffect } from 'react'
+import { useForm, UseFormReturn, FieldErrors } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { StepWizard, StepIndicator, StepContent, useStepWizard } from '@/components/ui/step-wizard'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
+import { ButtonLoading } from '@/components/loading/global-loading'
+
+/**
+ * Step configuration for the wizard
+ */
+export interface WizardStep {
+  title: string
+  description?: string
+  requiredFields?: string[]
+}
+
+/**
+ * Validation function type
+ * Returns validation status for a specific step
+ */
+export type StepValidationFn = (
+  step: number,
+  formData: Record<string, any>,
+  errors: FieldErrors
+) => {
+  isValid: boolean
+  missingFields: string[]
+  hasErrors: boolean
+}
+
+/**
+ * Generic Form Wizard Props
+ */
+export interface GenericFormWizardProps<T extends z.ZodTypeAny> {
+  // Dialog props
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  description?: string
+
+  // Wizard configuration
+  steps: WizardStep[]
+  schema: T
+  defaultValues: z.infer<T>
+
+  // Step validation
+  validateStep?: StepValidationFn
+
+  // Render functions
+  renderStep: (step: number, form: UseFormReturn<z.infer<T>>) => ReactNode
+
+  // Submit handling
+  onSubmit: (data: z.infer<T>) => Promise<void>
+  isSubmitting?: boolean
+
+  // Mode
+  mode?: 'create' | 'edit'
+
+  // Loading state
+  isLoading?: boolean
+  loadingContent?: ReactNode
+}
+
+/**
+ * Generic Form Wizard Component
+ * Reusable wizard component for multi-step forms
+ *
+ * @example
+ * ```tsx
+ * <GenericFormWizard
+ *   open={open}
+ *   onOpenChange={setOpen}
+ *   title="Create User"
+ *   steps={userSteps}
+ *   schema={userSchema}
+ *   defaultValues={defaultUserValues}
+ *   renderStep={(step, form) => <UserStep step={step} form={form} />}
+ *   onSubmit={handleSubmit}
+ * />
+ * ```
+ */
+export function GenericFormWizard<T extends z.ZodTypeAny>({
+  open,
+  onOpenChange,
+  title,
+  description,
+  steps,
+  schema,
+  defaultValues,
+  validateStep,
+  renderStep,
+  onSubmit,
+  isSubmitting = false,
+  mode = 'create',
+  isLoading = false,
+  loadingContent,
+}: GenericFormWizardProps<T>) {
+  const form = useForm<z.infer<T>>({
+    resolver: zodResolver(schema),
+    defaultValues,
+  })
+
+  const { handleSubmit, formState: { errors }, reset, watch } = form
+
+  // Reset form when dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      reset(defaultValues)
+    }
+  }, [open, defaultValues, reset])
+
+  const handleFormSubmit = async (data: z.infer<T>) => {
+    try {
+      await onSubmit(data)
+      onOpenChange(false)
+    } catch (error) {
+      console.error('Form submission error:', error)
+    }
+  }
+
+  if (isLoading && loadingContent) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Loading...</DialogTitle>
+          </DialogHeader>
+          {loadingContent}
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          {description && <DialogDescription>{description}</DialogDescription>}
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
+          <StepWizard totalSteps={steps.length}>
+            {/* Step Indicator */}
+            <StepIndicator steps={steps} />
+
+            {/* Render each step */}
+            {steps.map((_, index) => (
+              <StepContent key={index} step={index}>
+                {renderStep(index, form)}
+              </StepContent>
+            ))}
+
+            {/* Wizard Footer */}
+            <WizardFooter
+              mode={mode}
+              isSubmitting={isSubmitting}
+              onCancel={() => onOpenChange(false)}
+              formData={watch()}
+              errors={errors}
+              steps={steps}
+              validateStep={validateStep}
+            />
+          </StepWizard>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/**
+ * Wizard Footer Component
+ * Handles navigation and validation
+ */
+interface WizardFooterProps {
+  mode: 'create' | 'edit'
+  isSubmitting: boolean
+  onCancel: () => void
+  formData: Record<string, any>
+  errors: FieldErrors
+  steps: WizardStep[]
+  validateStep?: StepValidationFn
+}
+
+function WizardFooter({
+  mode,
+  isSubmitting,
+  onCancel,
+  formData,
+  errors,
+  steps,
+  validateStep,
+}: WizardFooterProps) {
+  const { currentStep, goToPrevious, goToNext, isFirstStep, isLastStep } = useStepWizard()
+  const [showValidationError, setShowValidationError] = useState(false)
+
+  // Default validation using required fields
+  const defaultValidation = (step: number) => {
+    const requiredFields = steps[step]?.requiredFields || []
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field]
+      if (Array.isArray(value)) {
+        return value.length === 0
+      }
+      return !value || value === ''
+    })
+
+    const hasErrors = requiredFields.some(field => errors[field])
+
+    return {
+      isValid: missingFields.length === 0 && !hasErrors,
+      missingFields,
+      hasErrors,
+    }
+  }
+
+  // Use custom validation if provided, otherwise use default
+  const validationStatus = validateStep
+    ? validateStep(currentStep, formData, errors)
+    : defaultValidation(currentStep)
+
+  const handleNext = () => {
+    if (!validationStatus.isValid) {
+      setShowValidationError(true)
+      return
+    }
+    setShowValidationError(false)
+    goToNext()
+  }
+
+  // Reset validation error when step changes
+  useEffect(() => {
+    setShowValidationError(false)
+  }, [currentStep])
+
+  return (
+    <>
+      {/* Validation Error Alert */}
+      {showValidationError && !validationStatus.isValid && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {validationStatus.missingFields.length > 0
+              ? `Please fill in required fields: ${validationStatus.missingFields.join(', ')}`
+              : 'Please fix the errors before proceeding'}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <DialogFooter className="mt-6">
+        <div className="flex justify-between w-full">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={isFirstStep ? onCancel : goToPrevious}
+          >
+            {isFirstStep ? 'Cancel' : 'Previous'}
+          </Button>
+
+          {isLastStep ? (
+            <ButtonLoading
+              type="submit"
+              isLoading={isSubmitting}
+              variant="default"
+              className="min-w-[100px]"
+            >
+              {mode === 'create' ? 'Create' : 'Save'}
+            </ButtonLoading>
+          ) : (
+            <Button
+              type="button"
+              onClick={handleNext}
+              variant="default"
+              className="min-w-[100px]"
+              disabled={!validationStatus.isValid}
+            >
+              Next
+            </Button>
+          )}
+        </div>
+      </DialogFooter>
+    </>
+  )
+}
