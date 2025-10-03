@@ -19,5 +19,9 @@
   "required": "필수",
   "optional": "선택",
   "select": "선택",
-  "enter": "입력"
+  "enter": "입력",
+  "selectAll": "전체 선택",
+  "deselectAll": "전체 해제",
+  "clear": "지우기",
+  "noResults": "결과 없음"
 }

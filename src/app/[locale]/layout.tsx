@@ -5,6 +5,7 @@ import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import '../globals.css'
 import QueryProvider from '@/components/providers/query-provider'
+import { Toaster } from '@/components/ui/toaster'
 import { locales } from '@/i18n'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -45,6 +46,7 @@ export default async function RootLayout({
           <QueryProvider>
             {children}
           </QueryProvider>
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CloudTable } from '@/components/cloud-table/cloud-table'
 import { createColumns } from '@/components/cloud-table/columns'
-import { CloudFormDialog } from '@/components/cloud-form/cloud-form-dialog'
+import { CloudFormWizard } from '@/components/cloud-form/cloud-form-wizard'
 import { useCloudList } from '@/hooks/queries'
 import { ErrorBoundary } from '@/components/error/error-boundary'
 import { Suspense } from 'react'
@@ -46,7 +46,7 @@ export default function HomePage() {
           </Suspense>
         </ErrorBoundary>
 
-        <CloudFormDialog
+        <CloudFormWizard
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           mode={dialogMode}

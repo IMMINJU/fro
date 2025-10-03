@@ -66,6 +66,16 @@ export class CloudService {
   async get(id: string): Promise<Cloud> {
     await this.delay()
 
+    const { sampleCloudData } = await import('@/data/sample-data')
+
+    // Find cloud in sample data
+    const cloud = sampleCloudData.find(c => c.id === id)
+
+    if (cloud) {
+      return cloud
+    }
+
+    // Fallback: return mock data if not found
     const mockCloud: Cloud = {
       id,
       provider: 'AWS',
@@ -89,6 +99,8 @@ export class CloudService {
       eventSource: {
         cloudTrailName: 'production-cloudtrail',
       },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
 
     return mockCloud

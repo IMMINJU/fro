@@ -30,7 +30,7 @@ interface CloudTableProps {
 
 export function CloudTable({ data, columns, onCreateCloud, onEditCloud, isLoading = false }: CloudTableProps) {
   const tCloud = useTranslations('cloud')
-  const tMessages = useTranslations('messages')
+  const tMessages = useTranslations('cloud.messages')
 
   const table = useReactTable({
     data,

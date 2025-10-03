@@ -19,5 +19,9 @@
   "required": "必須",
   "optional": "任意",
   "select": "選択",
-  "enter": "入力"
+  "enter": "入力",
+  "selectAll": "すべて選択",
+  "deselectAll": "すべて解除",
+  "clear": "クリア",
+  "noResults": "結果がありません"
 }

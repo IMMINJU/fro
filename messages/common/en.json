@@ -19,5 +19,9 @@
   "required": "Required",
   "optional": "Optional",
   "select": "Select",
-  "enter": "Enter"
+  "enter": "Enter",
+  "selectAll": "Select All",
+  "deselectAll": "Deselect All",
+  "clear": "Clear",
+  "noResults": "No results found"
 }
