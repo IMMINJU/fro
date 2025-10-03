@@ -58,7 +58,7 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
         setCurrentProvider(cloud.provider)
         setCurrentCredentialType(cloud.credentialType)
 
-        const formData: any = {
+        const formData: Record<string, unknown> = {
           ...cloudFormConfig.defaultValues,
           name: cloud.name,
           provider: cloud.provider,
@@ -76,7 +76,7 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
         const credFields = getCredentialFields(cloud.provider, cloud.credentialType)
         credFields.forEach(field => {
           if (field.key in cloud.credentials) {
-            formData[field.key] = (cloud.credentials as any)[field.key] || ''
+            formData[field.key] = (cloud.credentials as unknown as Record<string, unknown>)[field.key] || ''
           }
         })
 
@@ -85,7 +85,7 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
           const eventFields = getEventSourceFields(cloud.provider)
           eventFields.forEach(field => {
             if (field.key in cloud.eventSource!) {
-              formData[field.key] = (cloud.eventSource as any)[field.key] || ''
+              formData[field.key] = (cloud.eventSource as unknown as Record<string, unknown>)[field.key] || ''
             }
           })
         }
@@ -121,11 +121,11 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
   )
 
   // Custom validation for step 2 (credentials with dynamic fields)
-  const validateStep = (step: number, formData: Record<string, any>, errors: any) => {
+  const validateStep = (step: number, formData: Record<string, unknown>, errors: unknown) => {
     if (step === 1) {
-      return getStepValidationStatus(step, formData, errors)
+      return getStepValidationStatus(step, formData, errors as any)
     }
-    return validation.validateStep(step, formData, errors)
+    return validation.validateStep(step, formData, errors as any)
   }
 
   // Memoize provider-based data at component level
@@ -137,254 +137,44 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
   const eventSourceFields = useMemo(() =>
     getEventSourceFields(currentProvider), [currentProvider])
 
-  // Render step content
+  // Render step content with a wrapper component to handle hooks
   const renderStep = (step: number, form: UseFormReturn<z.infer<typeof cloudFormSchema>>) => {
-    const { watch, setValue, register, formState: { errors } } = form
-
-    // Watch for provider and credential type changes
-    const watchProvider = watch('provider') as Provider
-    const watchCredentialType = watch('credentialType')
-    const watchScheduleScanEnabled = watch('scheduleScanEnabled')
-
-    // Handle provider changes
-    if (watchProvider && watchProvider !== currentProvider) {
-      setCurrentProvider(watchProvider)
-      const config = getProviderConfig(watchProvider)
-      const defaultCredType = config.defaultCredentialType
-      setValue('credentialType', defaultCredType)
-      setCurrentCredentialType(defaultCredType)
-    }
-
-    // Handle credential type changes
-    if (watchCredentialType && watchCredentialType !== currentCredentialType) {
-      setCurrentCredentialType(watchCredentialType)
-    }
-
-    const getRegionList = (provider: Provider) => {
-      switch (provider) {
-        case 'AWS': return AWSRegionList
-        case 'AZURE': return AzureRegionList
-        case 'GCP': return GCPRegionList
-        default: return AWSRegionList
-      }
-    }
-
-    switch (step) {
-      case 0: // Basic Info
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">{tCloud('name')} *</Label>
-              <Input
-                id="name"
-                {...register('name', { onBlur: () => form.trigger('name') })}
-                placeholder={`${t('enter')} ${tCloud('name').toLowerCase()}`}
-                className={errors.name ? 'border-red-500' : ''}
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500 mt-1">{errors.name.message as string}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="provider">{tCloud('provider')} *</Label>
-              <Select
-                value={watchProvider}
-                onValueChange={(value) => setValue('provider', value as Provider)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={`${t('select')} ${tCloud('provider').toLowerCase()}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="AWS">AWS</SelectItem>
-                  <SelectItem value="AZURE" disabled>Azure (Coming Soon)</SelectItem>
-                  <SelectItem value="GCP" disabled>GCP (Coming Soon)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="cloudGroupName">{tCloud('cloudGroup')}</Label>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {CLOUD_GROUP_NAMES.map((group) => (
-                  <div key={group} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`group-${group}`}
-                      checked={watch('cloudGroupName')?.includes(group) || false}
-                      onCheckedChange={(checked) => {
-                        const current = watch('cloudGroupName') || []
-                        if (checked) {
-                          setValue('cloudGroupName', [...current, group])
-                        } else {
-                          setValue('cloudGroupName', current.filter(g => g !== group))
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`group-${group}`}>{group}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-
-      case 1: // Credentials
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="credentialType">{tCloud('credentialType')} *</Label>
-              <Select
-                value={watchCredentialType}
-                onValueChange={(value) => setValue('credentialType', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={`${t('select')} ${tCloud('credentialType').toLowerCase()}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  {providerConfig.credentialTypes.map((credType) => (
-                    <SelectItem key={credType.value} value={credType.value}>
-                      {credType.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-3">
-              {credentialFields.map((field) => (
-                <DynamicField
-                  key={field.key}
-                  field={field}
-                  register={register}
-                  errors={errors}
-                />
-              ))}
-            </div>
-
-            {eventSourceFields.length > 0 && (
-              <div className="space-y-3 pt-4 border-t">
-                <Label>{tCloud('eventSource')}</Label>
-                {eventSourceFields.map((field) => (
-                  <DynamicField
-                    key={field.key}
-                    field={field}
-                    register={register}
-                    errors={errors}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )
-
-      case 2: // Regions
-        return (
-          <div className="space-y-4">
-            <RegionSelector
-              regions={[...getRegionList(currentProvider)]}
-              selectedRegions={watch('regionList') || []}
-              onSelectionChange={(regions) => setValue('regionList', regions)}
-              error={errors.regionList?.message as string}
-            />
-
-            <div>
-              <Label htmlFor="proxyUrl">{tCloud('proxyUrl')}</Label>
-              <Input
-                id="proxyUrl"
-                {...register('proxyUrl')}
-                placeholder="https://proxy.company.com:8080"
-              />
-            </div>
-          </div>
-        )
-
-      case 3: // Features
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>{tCloud('features')}</Label>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="eventProcessEnabled"
-                    {...register('eventProcessEnabled')}
-                  />
-                  <Label htmlFor="eventProcessEnabled">{tCloud('eventProcessing')}</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="userActivityEnabled"
-                    {...register('userActivityEnabled')}
-                  />
-                  <Label htmlFor="userActivityEnabled">{tCloud('userActivity')}</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="scheduleScanEnabled"
-                    {...register('scheduleScanEnabled')}
-                  />
-                  <Label htmlFor="scheduleScanEnabled">{tCloud('scheduleScan')}</Label>
-                </div>
-              </div>
-            </div>
-
-            {watchScheduleScanEnabled && (
-              <div className="space-y-2 p-3 border rounded">
-                <Label>{tCloud('scheduleSettings')}</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label htmlFor="frequency">{tCloud('frequency')}</Label>
-                    <Select
-                      value={watch('scheduleScanSetting.frequency')}
-                      onValueChange={(value) => setValue('scheduleScanSetting.frequency', value as any)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={`${t('select')} ${tCloud('frequency').toLowerCase()}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="HOUR">{tCloud('hourly')}</SelectItem>
-                        <SelectItem value="DAY">{tCloud('daily')}</SelectItem>
-                        <SelectItem value="WEEK">{tCloud('weekly')}</SelectItem>
-                        <SelectItem value="MONTH">{tCloud('monthly')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="minute">{tCloud('minute')}</Label>
-                    <Input
-                      id="minute"
-                      {...register('scheduleScanSetting.minute')}
-                      placeholder="0-59"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )
-
-      default:
-        return null
-    }
+    return (
+      <StepContentWrapper
+        step={step}
+        form={form}
+        currentProvider={currentProvider}
+        currentCredentialType={currentCredentialType}
+        setCurrentProvider={setCurrentProvider}
+        setCurrentCredentialType={setCurrentCredentialType}
+        providerConfig={providerConfig}
+        credentialFields={credentialFields}
+        eventSourceFields={eventSourceFields}
+        t={t}
+        tCloud={tCloud}
+      />
+    )
   }
 
   // Handle form submission
   const handleSubmit = async (data: z.infer<typeof cloudFormSchema>) => {
-    const credentialFields = getCredentialFields(currentProvider, currentCredentialType)
+    const credFields = getCredentialFields(currentProvider, currentCredentialType)
     const eventFields = getEventSourceFields(currentProvider)
 
-    const credentials: any = {}
-    credentialFields.forEach(field => {
-      if ((data as any)[field.key] !== undefined && (data as any)[field.key] !== '') {
-        credentials[field.key] = (data as any)[field.key]
+    const credentials: Record<string, string> = {}
+    credFields.forEach(field => {
+      const value = (data as Record<string, unknown>)[field.key]
+      if (value !== undefined && value !== '') {
+        credentials[field.key] = value as string
       }
     })
 
-    const eventSource: any = {}
+    const eventSource: Record<string, string> = {}
     let hasEventSource = false
     eventFields.forEach(field => {
-      if ((data as any)[field.key] !== undefined && (data as any)[field.key] !== '') {
-        eventSource[field.key] = (data as any)[field.key]
+      const value = (data as Record<string, unknown>)[field.key]
+      if (value !== undefined && value !== '') {
+        eventSource[field.key] = value as string
         hasEventSource = true
       }
     })
@@ -400,8 +190,8 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
       regionList: data.regionList,
       proxyUrl: data.proxyUrl || undefined,
       credentialType: data.credentialType as any,
-      credentials,
-      eventSource: hasEventSource ? eventSource : undefined,
+      credentials: credentials as any,
+      eventSource: hasEventSource ? (eventSource as any) : undefined,
     }
 
     if (mode === 'create') {
@@ -429,8 +219,267 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
       onSubmit={handleSubmit}
       isSubmitting={createMutation.isPending || updateMutation.isPending}
       mode={mode}
-      isLoading={initializing}
+      isLoading={!!initializing}
       loadingContent={<FormSkeleton />}
     />
   )
+}
+
+// Separate component to handle hooks properly
+function StepContentWrapper({
+  step,
+  form,
+  currentProvider,
+  currentCredentialType,
+  setCurrentProvider,
+  setCurrentCredentialType,
+  providerConfig,
+  credentialFields,
+  eventSourceFields,
+  t,
+  tCloud,
+}: {
+  step: number
+  form: UseFormReturn<z.infer<typeof cloudFormSchema>>
+  currentProvider: Provider
+  currentCredentialType: string
+  setCurrentProvider: (provider: Provider) => void
+  setCurrentCredentialType: (type: string) => void
+  providerConfig: ReturnType<typeof getProviderConfig>
+  credentialFields: ReturnType<typeof getCredentialFields>
+  eventSourceFields: ReturnType<typeof getEventSourceFields>
+  t: ReturnType<typeof useTranslations>
+  tCloud: ReturnType<typeof useTranslations>
+}) {
+  const { watch, setValue, register, formState: { errors } } = form
+
+  // Watch for provider and credential type changes
+  const watchProvider = watch('provider') as Provider
+  const watchCredentialType = watch('credentialType')
+  const watchScheduleScanEnabled = watch('scheduleScanEnabled')
+
+  // Handle provider changes with useEffect
+  useEffect(() => {
+    if (watchProvider && watchProvider !== currentProvider) {
+      setCurrentProvider(watchProvider)
+      const config = getProviderConfig(watchProvider)
+      const defaultCredType = config.defaultCredentialType
+      setValue('credentialType', defaultCredType)
+      setCurrentCredentialType(defaultCredType)
+    }
+  }, [watchProvider, currentProvider, setValue, setCurrentProvider, setCurrentCredentialType])
+
+  // Handle credential type changes with useEffect
+  useEffect(() => {
+    if (watchCredentialType && watchCredentialType !== currentCredentialType) {
+      setCurrentCredentialType(watchCredentialType)
+    }
+  }, [watchCredentialType, currentCredentialType, setCurrentCredentialType])
+
+  const getRegionList = (provider: Provider) => {
+    switch (provider) {
+      case 'AWS': return AWSRegionList
+      case 'AZURE': return AzureRegionList
+      case 'GCP': return GCPRegionList
+      default: return AWSRegionList
+    }
+  }
+
+  switch (step) {
+    case 0: // Basic Info
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="name">{tCloud('name')} *</Label>
+            <Input
+              id="name"
+              {...register('name', { onBlur: () => form.trigger('name') })}
+              placeholder={`${t('enter')} ${tCloud('name').toLowerCase()}`}
+              className={errors.name ? 'border-red-500' : ''}
+            />
+            {errors.name && (
+              <p className="text-sm text-red-500 mt-1">{errors.name.message as string}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="provider">{tCloud('provider')} *</Label>
+            <Select
+              value={watchProvider}
+              onValueChange={(value) => setValue('provider', value as Provider)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={`${t('select')} ${tCloud('provider').toLowerCase()}`} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="AWS">AWS</SelectItem>
+                <SelectItem value="AZURE" disabled>Azure (Coming Soon)</SelectItem>
+                <SelectItem value="GCP" disabled>GCP (Coming Soon)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="cloudGroupName">{tCloud('cloudGroup')}</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {CLOUD_GROUP_NAMES.map((group) => (
+                <div key={group} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`group-${group}`}
+                    checked={watch('cloudGroupName')?.includes(group) || false}
+                    onCheckedChange={(checked) => {
+                      const current = watch('cloudGroupName') || []
+                      if (checked) {
+                        setValue('cloudGroupName', [...current, group])
+                      } else {
+                        setValue('cloudGroupName', current.filter(g => g !== group))
+                      }
+                    }}
+                  />
+                  <Label htmlFor={`group-${group}`}>{group}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 1: // Credentials
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="credentialType">{tCloud('credentialType')} *</Label>
+            <Select
+              value={watchCredentialType}
+              onValueChange={(value) => setValue('credentialType', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={`${t('select')} ${tCloud('credentialType').toLowerCase()}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {providerConfig.credentialTypes.map((credType) => (
+                  <SelectItem key={credType.value} value={credType.value}>
+                    {credType.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-3">
+            {credentialFields.map((field) => (
+              <DynamicField
+                key={field.key}
+                field={field}
+                register={register}
+                errors={errors}
+              />
+            ))}
+          </div>
+
+          {eventSourceFields.length > 0 && (
+            <div className="space-y-3 pt-4 border-t">
+              <Label>{tCloud('eventSource')}</Label>
+              {eventSourceFields.map((field) => (
+                <DynamicField
+                  key={field.key}
+                  field={field}
+                  register={register}
+                  errors={errors}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )
+
+    case 2: // Regions
+      return (
+        <div className="space-y-4">
+          <RegionSelector
+            regions={[...getRegionList(currentProvider)]}
+            selectedRegions={watch('regionList') || []}
+            onSelectionChange={(regions) => setValue('regionList', regions)}
+            error={errors.regionList?.message as string}
+          />
+
+          <div>
+            <Label htmlFor="proxyUrl">{tCloud('proxyUrl')}</Label>
+            <Input
+              id="proxyUrl"
+              {...register('proxyUrl')}
+              placeholder="https://proxy.company.com:8080"
+            />
+          </div>
+        </div>
+      )
+
+    case 3: // Features
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>{tCloud('features')}</Label>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="eventProcessEnabled"
+                  {...register('eventProcessEnabled')}
+                />
+                <Label htmlFor="eventProcessEnabled">{tCloud('eventProcessing')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="userActivityEnabled"
+                  {...register('userActivityEnabled')}
+                />
+                <Label htmlFor="userActivityEnabled">{tCloud('userActivity')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="scheduleScanEnabled"
+                  {...register('scheduleScanEnabled')}
+                />
+                <Label htmlFor="scheduleScanEnabled">{tCloud('scheduleScan')}</Label>
+              </div>
+            </div>
+          </div>
+
+          {watchScheduleScanEnabled && (
+            <div className="space-y-2 p-3 border rounded">
+              <Label>{tCloud('scheduleSettings')}</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label htmlFor="frequency">{tCloud('frequency')}</Label>
+                  <Select
+                    value={watch('scheduleScanSetting.frequency')}
+                    onValueChange={(value) => setValue('scheduleScanSetting.frequency', value as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={`${t('select')} ${tCloud('frequency').toLowerCase()}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="HOUR">{tCloud('hourly')}</SelectItem>
+                      <SelectItem value="DAY">{tCloud('daily')}</SelectItem>
+                      <SelectItem value="WEEK">{tCloud('weekly')}</SelectItem>
+                      <SelectItem value="MONTH">{tCloud('monthly')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="minute">{tCloud('minute')}</Label>
+                  <Input
+                    id="minute"
+                    {...register('scheduleScanSetting.minute')}
+                    placeholder="0-59"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )
+
+    default:
+      return null
+  }
 }
