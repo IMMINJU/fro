@@ -1,0 +1,23 @@
+{
+  "loading": "로딩 중...",
+  "save": "저장",
+  "cancel": "취소",
+  "delete": "삭제",
+  "edit": "수정",
+  "create": "생성",
+  "confirm": "확인",
+  "search": "검색",
+  "filter": "필터",
+  "actions": "작업",
+  "name": "이름",
+  "status": "상태",
+  "yes": "예",
+  "no": "아니오",
+  "close": "닫기",
+  "next": "다음",
+  "previous": "이전",
+  "required": "필수",
+  "optional": "선택",
+  "select": "선택",
+  "enter": "입력"
+}

@@ -1,0 +1,8 @@
+{
+  "required": "This field is required",
+  "minLength": "Minimum length is {min} characters",
+  "maxLength": "Maximum length is {max} characters",
+  "email": "Please enter a valid email address",
+  "url": "Please enter a valid URL",
+  "atLeastOneRegion": "At least one region is required"
+}

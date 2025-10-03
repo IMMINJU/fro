@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run i18n:validate && next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "lint:check": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:check:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+    "lint:check:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "i18n:validate": "node scripts/validate-i18n.cjs"
   },
   "dependencies": {
     "react": "^18",

@@ -8,8 +8,21 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Validate that the incoming `locale` parameter is valid
   if (!routing.locales.includes(locale as any)) notFound()
 
+  // Load all namespaces for enterprise structure
+  const [common, navigation, validation, cloud] = await Promise.all([
+    import(`../../messages/common/${locale}.json`).then(m => m.default),
+    import(`../../messages/shared/navigation/${locale}.json`).then(m => m.default),
+    import(`../../messages/shared/validation/${locale}.json`).then(m => m.default),
+    import(`../../messages/cloud/${locale}.json`).then(m => m.default),
+  ])
+
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    messages: {
+      common,
+      navigation,
+      validation,
+      cloud,
+    },
   }
 })

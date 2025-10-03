@@ -3,7 +3,7 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/lib/query-client'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { GlobalLoading } from '@/components/loading/global-loading'
 
 export default function QueryProvider({
@@ -11,17 +11,6 @@ export default function QueryProvider({
 }: {
   children: React.ReactNode
 }) {
-  const [mounted, setMounted] = useState(false)
-
-  // Ensure hydration consistency
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return <>{children}</>
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       {children}

@@ -1,0 +1,23 @@
+{
+  "loading": "読み込み中...",
+  "save": "保存",
+  "cancel": "キャンセル",
+  "delete": "削除",
+  "edit": "編集",
+  "create": "作成",
+  "confirm": "確認",
+  "search": "検索",
+  "filter": "フィルター",
+  "actions": "アクション",
+  "name": "名前",
+  "status": "ステータス",
+  "yes": "はい",
+  "no": "いいえ",
+  "close": "閉じる",
+  "next": "次へ",
+  "previous": "前へ",
+  "required": "必須",
+  "optional": "任意",
+  "select": "選択",
+  "enter": "入力"
+}
