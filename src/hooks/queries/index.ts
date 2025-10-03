@@ -3,7 +3,7 @@ export {
   useCloudList,
   useCreateCloud,
   useUpdateCloud,
-} from './use-cloud-queries'
+} from '@/features/clouds/hooks/use-cloud-queries'
 
 // Export query keys
 export { queryKeys } from '@/lib/query-keys'

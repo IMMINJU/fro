@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { cloudFormSchema } from '@/config/forms/cloud-form.config'
+import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 
 interface BasicInfoStepProps {
   form: UseFormReturn<z.infer<typeof cloudFormSchema>>

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { Provider } from '@/types/types'
 import { getCredentialFields, getEventSourceFields } from '@/components/cloud-form/provider-configs'
-import { cloudFormSchema } from '@/config/forms/cloud-form.config'
+import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 
 export function buildCloudPayload(
   data: z.infer<typeof cloudFormSchema>,

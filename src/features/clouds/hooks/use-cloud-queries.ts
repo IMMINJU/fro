@@ -10,7 +10,7 @@ import { cloudService ,
   FilterParams,
 } from '@/lib/api/services'
 import { queryKeys } from '@/lib/query-keys'
-import { useList, useCreate, useUpdate } from './use-crud-queries'
+import { useList, useCreate, useUpdate } from '@/hooks/queries/use-crud-queries'
 
 /**
  * Hook for fetching paginated cloud list

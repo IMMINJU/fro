@@ -2,11 +2,8 @@
 
 import { useState , Suspense } from 'react'
 import { useTranslations } from 'next-intl'
-import { useCloudList } from '@/hooks/queries'
-import { CloudFormWizard } from '@/components/cloud-form/cloud-form-wizard'
-import { CloudTable } from '@/components/cloud-table/cloud-table'
-import { createColumns } from '@/components/cloud-table/columns'
 import { ErrorBoundary } from '@/components/error/error-boundary'
+import { useCloudList, CloudFormWizard, CloudTable, cloudColumns } from '@/features/clouds'
 
 
 export default function HomePage() {
@@ -80,9 +77,8 @@ function CloudTableWithData({
   return (
     <CloudTable
       data={cloudList?.items || []}
-      columns={createColumns(onEditCloud)}
+      columns={cloudColumns(onEditCloud)}
       onCreateCloud={onCreateCloud}
-      onEditCloud={onEditCloud}
       isLoading={isLoading}
     />
   )

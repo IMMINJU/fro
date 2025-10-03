@@ -5,7 +5,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { cloudFormSchema } from '@/config/forms/cloud-form.config'
+import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 import { DynamicField } from '../dynamic-field'
 import { getProviderConfig } from '../provider-configs'
 

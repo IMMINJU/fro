@@ -7,7 +7,7 @@ import { Provider } from '@/types/types'
 import { getRegionList } from '@/lib/utils/region-utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { cloudFormSchema } from '@/config/forms/cloud-form.config'
+import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 import { RegionSelector } from '../region-selector'
 
 interface RegionsStepProps {
