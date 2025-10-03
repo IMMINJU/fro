@@ -51,7 +51,8 @@ class ApiClient {
     this.instance.interceptors.response.use(
       (response: AxiosResponse<ApiResponse>) => {
         // Log request duration
-        const duration = Date.now() - response.config.metadata?.startTime
+        const startTime = response.config.metadata?.startTime || Date.now()
+        const duration = Date.now() - startTime
         console.debug(`API Request: ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`)
 
         return response

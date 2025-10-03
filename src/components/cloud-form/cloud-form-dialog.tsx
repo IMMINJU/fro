@@ -240,7 +240,7 @@ export function CloudFormDialog({ open, onOpenChange, cloudId, mode }: CloudForm
         scheduleScanSetting: data.scheduleScanEnabled ? data.scheduleScanSetting : undefined,
         regionList: data.regionList,
         proxyUrl: data.proxyUrl || undefined,
-        credentialType: data.credentialType,
+        credentialType: data.credentialType as any,
         credentials: buildCredentials(data),
         eventSource: buildEventSource(data),
       }

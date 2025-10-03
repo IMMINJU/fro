@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CloudTable } from '@/components/cloud-table/cloud-table'
 import { createColumns } from '@/components/cloud-table/columns'
-import { sampleCloudData } from '@/data/sample-data'
 import { CloudFormDialog } from '@/components/cloud-form/cloud-form-dialog'
+import { useCloudList } from '@/hooks/queries'
+import { ErrorBoundary } from '@/components/error/error-boundary'
+import { Suspense } from 'react'
 
 export default function HomePage() {
   const t = useTranslations('cloud')
@@ -35,12 +37,14 @@ export default function HomePage() {
           </p>
         </div>
 
-        <CloudTable
-          data={sampleCloudData}
-          columns={createColumns(handleEditCloud)}
-          onCreateCloud={handleCreateCloud}
-          onEditCloud={handleEditCloud}
-        />
+        <ErrorBoundary>
+          <Suspense fallback={<CloudTableSkeleton />}>
+            <CloudTableWithData
+              onCreateCloud={handleCreateCloud}
+              onEditCloud={handleEditCloud}
+            />
+          </Suspense>
+        </ErrorBoundary>
 
         <CloudFormDialog
           open={dialogOpen}
@@ -50,5 +54,58 @@ export default function HomePage() {
         />
       </div>
     </main>
+  )
+}
+
+function CloudTableWithData({
+  onCreateCloud,
+  onEditCloud,
+}: {
+  onCreateCloud: () => void
+  onEditCloud: (cloudId: string) => void
+}) {
+  const {
+    data: cloudList,
+    isLoading,
+    error,
+  } = useCloudList({
+    page: 1,
+    limit: 50,
+  })
+
+  if (error) {
+    throw error // Will be caught by ErrorBoundary
+  }
+
+  return (
+    <CloudTable
+      data={cloudList?.items || []}
+      columns={createColumns(onEditCloud)}
+      onCreateCloud={onCreateCloud}
+      onEditCloud={onEditCloud}
+      isLoading={isLoading}
+    />
+  )
+}
+
+function CloudTableSkeleton() {
+  return (
+    <div className="w-full space-y-4">
+      <div className="flex justify-end">
+        <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+      </div>
+      <div className="rounded-md border">
+        <div className="space-y-3 p-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex space-x-4">
+              <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
+              <div className="h-4 bg-gray-200 rounded w-1/6 animate-pulse" />
+              <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
+              <div className="h-4 bg-gray-200 rounded w-1/6 animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }

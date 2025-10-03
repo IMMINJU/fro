@@ -1,4 +1,4 @@
-// 프로바이더 타입 정의
+// 프로바이더 타입 정의 (AWS만 활성화)
 export type Provider = 'AWS' | 'AZURE' | 'GCP';
 
 // AWS 리전 목록
@@ -25,7 +25,7 @@ export const AWSRegionList = [
 
 export type AWSRegion = typeof AWSRegionList[number];
 
-// Azure 리전 목록
+// Azure 리전 목록 (미사용)
 export const AzureRegionList = [
   'global',
   'eastus',
@@ -46,7 +46,7 @@ export const AzureRegionList = [
 
 export type AzureRegion = typeof AzureRegionList[number];
 
-// GCP 리전 목록
+// GCP 리전 목록 (미사용)
 export const GCPRegionList = [
   'global',
   'us-central1',
@@ -63,63 +63,46 @@ export const GCPRegionList = [
 
 export type GCPRegion = typeof GCPRegionList[number];
 
-// 크리덴셜 타입 정의
+// AWS 크리덴셜 타입 (ACCESS_KEY만 활성화)
 export type AWSCredentialType = 'ACCESS_KEY' | 'ASSUME_ROLE' | 'ROLES_ANYWHERE';
-export type AzureCredentialType = 'APPLICATION' | 'MANAGED_IDENTITY';
-export type GCPCredentialType = 'SERVICE_ACCOUNT' | 'WORKLOAD_IDENTITY';
 
-// AWS 크리덴셜 인터페이스
 export interface AWSCredential {
   accessKeyId: string;
   secretAccessKey: string;
   roleArn?: string;
 }
 
-// AWS 이벤트 소스 인터페이스
 export interface AWSEventSource {
   cloudTrailName?: string;
 }
 
-// Azure 크리덴셜 인터페이스
-export interface AzureApplicationCredential {
+// Azure 크리덴셜 타입 (미사용)
+export type AzureCredentialType = 'APPLICATION';
+
+export interface AzureCredential {
   tenantId: string;
   subscriptionId: string;
   applicationId: string;
   secretKey: string;
 }
 
-export interface AzureManagedIdentityCredential {
-  subscriptionId: string;
-  resourceId?: string;
-}
-
-export type AzureCredential = AzureApplicationCredential | AzureManagedIdentityCredential;
-
-// Azure 이벤트 소스 인터페이스
 export interface AzureEventSource {
   storageAccountName?: string;
 }
 
-// GCP 크리덴셜 인터페이스
-export interface GCPServiceAccountCredential {
-  projectId: string;
-  serviceAccountKey: string; // JSON string
+// GCP 크리덴셜 타입 (미사용)
+export type GCPCredentialType = 'JSON_TEXT';
+
+export interface GCPCredential {
+  projectId?: string;
+  jsonText: string;
 }
 
-export interface GCPWorkloadIdentityCredential {
-  projectId: string;
-  workloadIdentityProvider: string;
-  serviceAccount: string;
-}
-
-export type GCPCredential = GCPServiceAccountCredential | GCPWorkloadIdentityCredential;
-
-// GCP 이벤트 소스 인터페이스
 export interface GCPEventSource {
   storageAccountName?: string;
 }
 
-// 스케줄 스캔 설정 인터페이스
+// 스케줄 스캔 설정
 export interface ScheduleScanSetting {
   /**
    * frequency에 따라 각 필드의 필수 여부가 변경됨
@@ -165,50 +148,6 @@ export interface Cloud {
   eventSource?: AWSEventSource | AzureEventSource | GCPEventSource;
 }
 
-// 프로바이더별 타입 가드
-export const isAWSCredential = (
-  credentials: Cloud['credentials'],
-  credentialType: Cloud['credentialType']
-): credentials is AWSCredential => {
-  return credentialType === 'ACCESS_KEY' || credentialType === 'ASSUME_ROLE' || credentialType === 'ROLES_ANYWHERE';
-};
-
-export const isAzureCredential = (
-  credentials: Cloud['credentials'],
-  credentialType: Cloud['credentialType']
-): credentials is AzureCredential => {
-  return credentialType === 'APPLICATION' || credentialType === 'MANAGED_IDENTITY';
-};
-
-export const isGCPCredential = (
-  credentials: Cloud['credentials'],
-  credentialType: Cloud['credentialType']
-): credentials is GCPCredential => {
-  return credentialType === 'SERVICE_ACCOUNT' || credentialType === 'WORKLOAD_IDENTITY';
-};
-
-// 프로바이더별 이벤트 소스 타입 가드
-export const isAWSEventSource = (
-  eventSource: Cloud['eventSource'],
-  provider: Provider
-): eventSource is AWSEventSource => {
-  return provider === 'AWS';
-};
-
-export const isAzureEventSource = (
-  eventSource: Cloud['eventSource'],
-  provider: Provider
-): eventSource is AzureEventSource => {
-  return provider === 'AZURE';
-};
-
-export const isGCPEventSource = (
-  eventSource: Cloud['eventSource'],
-  provider: Provider
-): eventSource is GCPEventSource => {
-  return provider === 'GCP';
-};
-
 // 클라우드 그룹 이름 상수 (편의상 정의)
 export const CLOUD_GROUP_NAMES = [
   'Production',
@@ -227,22 +166,6 @@ export type Weekday = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
 // 빈도 타입
 export type Frequency = 'HOUR' | 'DAY' | 'WEEK' | 'MONTH';
 
-// API 응답 타입 (예시)
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-// 클라우드 목록 조회 응답 타입
-export interface CloudListResponse {
-  clouds: Cloud[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
 // 클라우드 생성/수정 요청 타입
-export type CloudCreateRequest = Omit<Cloud, 'id'>;
-export type CloudUpdateRequest = Partial<Omit<Cloud, 'id'>> & { id: string };
+export type CloudCreateRequest = Omit<Cloud, 'id' | 'status' | 'createdAt' | 'updatedAt'>;
+export type CloudUpdateRequest = Partial<CloudCreateRequest>;

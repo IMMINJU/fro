@@ -12,11 +12,46 @@ export class CloudService {
   async list(
     params?: PaginationParams & FilterParams
   ): Promise<ListResponse<Cloud>> {
-    const response = await apiClient.get<ListResponse<Cloud>>(
-      API_ENDPOINTS.CLOUDS.LIST,
-      params
-    )
-    return response
+    // For now, return mock data matching the ListResponse interface
+    await this.delay()
+
+    // Import sample data
+    const { sampleCloudData } = await import('@/data/sample-data')
+
+    const page = params?.page || 1
+    const limit = params?.limit || 10
+    const search = params?.search
+    const provider = params?.provider
+
+    // Filter data based on search and provider
+    let filteredData = sampleCloudData
+
+    if (search) {
+      filteredData = filteredData.filter(cloud =>
+        cloud.name.toLowerCase().includes(search.toLowerCase()) ||
+        cloud.id.toLowerCase().includes(search.toLowerCase())
+      )
+    }
+
+    if (provider) {
+      filteredData = filteredData.filter(cloud =>
+        cloud.provider === provider
+      )
+    }
+
+    // Paginate
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+    const paginatedData = filteredData.slice(startIndex, endIndex)
+
+    return {
+      items: paginatedData,
+      total: filteredData.length,
+      page,
+      limit,
+      hasNext: endIndex < filteredData.length,
+      hasPrev: page > 1,
+    }
   }
 
   // Get single cloud by ID
@@ -81,50 +116,6 @@ export class CloudService {
     return updatedCloud
   }
 
-  // Delete cloud
-  async delete(id: string): Promise<void> {
-    await this.delay()
-
-    console.log('Deleting cloud:', id)
-  }
-
-  // Bulk operations
-  async bulkDelete(ids: string[]): Promise<void> {
-    await this.delay()
-
-    console.log('Bulk deleting clouds:', ids)
-  }
-
-  async bulkUpdate(
-    ids: string[],
-    data: Partial<CloudUpdateRequest>
-  ): Promise<Cloud[]> {
-    await this.delay()
-
-    console.log('Bulk updating clouds:', { ids, data })
-
-    return ids.map(id => ({ ...data, id } as Cloud))
-  }
-
-  // Validation methods
-  async validateCredentials(
-    provider: string,
-    credentials: any
-  ): Promise<{ valid: boolean; message?: string }> {
-    await this.delay()
-
-    console.log('Validating credentials for provider:', provider, credentials)
-
-    return { valid: true }
-  }
-
-  async testConnection(id: string): Promise<{ success: boolean; message?: string }> {
-    await this.delay()
-
-    console.log('Testing connection for cloud:', id)
-
-    return { success: true, message: 'Connection successful' }
-  }
 
   // Private helper for mock delay
   private delay(): Promise<void> {
