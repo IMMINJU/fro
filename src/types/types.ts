@@ -21,7 +21,7 @@ export const AWSRegionList = [
   'us-east-2',
   'us-west-1',
   'us-west-2',
-] as const;
+] as const
 
 export type AWSRegion = typeof AWSRegionList[number];
 
@@ -42,7 +42,7 @@ export const AzureRegionList = [
   'brazilsouth',
   'uksouth',
   'southindia',
-] as const;
+] as const
 
 export type AzureRegion = typeof AzureRegionList[number];
 
@@ -59,7 +59,7 @@ export const GCPRegionList = [
   'asia-southeast1',
   'australia-southeast1',
   'southamerica-east1',
-] as const;
+] as const
 
 export type GCPRegion = typeof GCPRegionList[number];
 
@@ -156,7 +156,7 @@ export const CLOUD_GROUP_NAMES = [
   'Test',
   'Security',
   'Monitoring',
-] as const;
+] as const
 
 export type CloudGroupName = typeof CLOUD_GROUP_NAMES[number];
 

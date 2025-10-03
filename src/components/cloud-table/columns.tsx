@@ -1,10 +1,10 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
+import { Edit } from 'lucide-react'
 import { Cloud, Provider } from '@/types/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Edit } from 'lucide-react'
 
 // 프로바이더별 색상 매핑
 const getProviderColor = (provider: Provider) => {

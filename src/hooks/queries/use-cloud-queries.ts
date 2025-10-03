@@ -1,27 +1,26 @@
 'use client'
 
-import { cloudService } from '@/lib/api/services'
-import { queryKeys } from '@/lib/query-keys'
 import {
   Cloud,
   CloudCreateRequest,
   CloudUpdateRequest,
 } from '@/types/types'
-import {
+import { cloudService ,
   PaginationParams,
   FilterParams,
 } from '@/lib/api/services'
+import { queryKeys } from '@/lib/query-keys'
 import { useList, useCreate, useUpdate } from './use-crud-queries'
 
 /**
  * Hook for fetching paginated cloud list
  */
 export function useCloudList(
-  params?: PaginationParams & FilterParams
+  params?: PaginationParams & FilterParams,
 ) {
   return useList<Cloud>(
     queryKeys.clouds.list(params),
-    () => cloudService.list(params)
+    () => cloudService.list(params),
   )
 }
 
@@ -48,7 +47,7 @@ export function useCreateCloud() {
         credentials: newCloud.credentials,
         eventSource: newCloud.eventSource,
       }),
-    }
+    },
   )
 }
 
@@ -62,6 +61,6 @@ export function useUpdateCloud() {
     {
       translationKey: 'cloud.messages',
       onOptimisticUpdate: (id, data) => data,
-    }
+    },
   )
 }

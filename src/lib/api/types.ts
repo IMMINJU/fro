@@ -48,7 +48,7 @@ export class ApiClientError extends Error {
     public statusCode: number,
     public code: string,
     message: string,
-    public details?: any
+    public details?: any,
   ) {
     super(message)
     this.name = 'ApiClientError'
@@ -65,7 +65,7 @@ export class NetworkError extends Error {
 export class ValidationError extends Error {
   constructor(
     message: string,
-    public errors: Record<string, string[]>
+    public errors: Record<string, string[]>,
   ) {
     super(message)
     this.name = 'ValidationError'

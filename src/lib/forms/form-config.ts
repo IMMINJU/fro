@@ -1,6 +1,6 @@
-import { z } from 'zod'
 import { ReactNode } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { z } from 'zod'
 import { FieldConfig, StepValidationConfig } from '@/lib/validation/generic-validation'
 
 /**
@@ -83,13 +83,13 @@ export class FormConfigBuilder<T extends z.ZodTypeAny = any> {
   }
 
   addStep(step: StepConfig): this {
-    if (!this.config.steps) this.config.steps = []
+    if (!this.config.steps) {this.config.steps = []}
     this.config.steps.push(step)
     return this
   }
 
   addField(field: DynamicFieldConfig): this {
-    if (!this.config.fields) this.config.fields = []
+    if (!this.config.fields) {this.config.fields = []}
     this.config.fields.push(field)
     return this
   }
@@ -122,7 +122,7 @@ export function createStep(
     requiredFields?: string[]
     customValidation?: StepValidationConfig['customValidation']
     render?: (form: UseFormReturn<any>) => ReactNode
-  } = {}
+  } = {},
 ): StepConfig {
   return {
     title,
@@ -142,7 +142,7 @@ export function createStep(
 export function createDynamicField(
   key: string,
   label: string,
-  options: Partial<Omit<DynamicFieldConfig, 'key' | 'label'>> = {}
+  options: Partial<Omit<DynamicFieldConfig, 'key' | 'label'>> = {},
 ): DynamicFieldConfig {
   return {
     key,
@@ -193,12 +193,16 @@ export const fieldPresets = {
       placeholder: 'Enter description',
     }),
 
-  select: (key: string, label: string, options: Array<{ value: string; label: string }>, required = true) =>
-    createDynamicField(key, label, {
-      type: 'select',
-      required,
-      options,
-    }),
+  select: (
+    key: string,
+    label: string,
+    options: Array<{ value: string; label: string }>,
+    required = true,
+  ) => createDynamicField(key, label, {
+    type: 'select',
+    required,
+    options,
+  }),
 
   checkbox: (key: string, label: string) =>
     createDynamicField(key, label, {

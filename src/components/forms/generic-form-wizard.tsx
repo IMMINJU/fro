@@ -1,15 +1,15 @@
 'use client'
 
 import { ReactNode, useState, useEffect } from 'react'
-import { useForm, UseFormReturn, FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { StepWizard, StepIndicator, StepContent, useStepWizard } from '@/components/ui/step-wizard'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
+import { useForm, UseFormReturn, FieldErrors } from 'react-hook-form'
+import { z } from 'zod'
 import { ButtonLoading } from '@/components/loading/global-loading'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { StepWizard, StepIndicator, StepContent, useStepWizard } from '@/components/ui/step-wizard'
 
 /**
  * Step configuration for the wizard
@@ -234,10 +234,10 @@ function WizardFooter({
     goToNext()
   }
 
-  // Reset validation error when step changes
-  useEffect(() => {
+  const handlePrevious = () => {
     setShowValidationError(false)
-  }, [currentStep])
+    goToPrevious()
+  }
 
   return (
     <>
@@ -258,7 +258,7 @@ function WizardFooter({
           <Button
             type="button"
             variant="outline"
-            onClick={isFirstStep ? onCancel : goToPrevious}
+            onClick={isFirstStep ? onCancel : handlePrevious}
           >
             {isFirstStep ? 'Cancel' : 'Previous'}
           </Button>

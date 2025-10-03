@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-import { notFound } from 'next/navigation'
 import '../globals.css'
 import QueryProvider from '@/components/providers/query-provider'
 import { Toaster } from '@/components/ui/toaster'
@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 
 export default async function RootLayout({
   children,
-  params
+  params,
 }: RootLayoutProps) {
   const { locale } = await params
 

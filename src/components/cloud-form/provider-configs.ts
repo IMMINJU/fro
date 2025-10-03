@@ -1,5 +1,5 @@
-import { Provider } from '@/types/types'
 import * as z from 'zod'
+import { Provider } from '@/types/types'
 
 // Provider-specific field configurations
 export interface FieldConfig {
@@ -259,7 +259,7 @@ export const getProviderConfig = (provider: Provider): ProviderConfig => {
 // Helper function to get credential fields for a specific provider and type
 export const getCredentialFields = (
   provider: Provider,
-  credentialType: string
+  credentialType: string,
 ): FieldConfig[] => {
   const config = getProviderConfig(provider)
   return config.credentialFields[credentialType] || []
@@ -274,7 +274,7 @@ export const getEventSourceFields = (provider: Provider): FieldConfig[] => {
 // Dynamic schema generation based on provider and credential type
 export const createProviderSchema = (
   provider: Provider,
-  credentialType: string
+  credentialType: string,
 ) => {
   const credentialFields = getCredentialFields(provider, credentialType)
   const eventSourceFields = getEventSourceFields(provider)

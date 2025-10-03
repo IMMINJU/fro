@@ -34,7 +34,7 @@ export class FormValidation {
 
   constructor(
     stepConfigs: Record<number, StepValidationConfig>,
-    fieldConfigs: FieldConfig[]
+    fieldConfigs: FieldConfig[],
   ) {
     this.stepConfigs = new Map(Object.entries(stepConfigs).map(([k, v]) => [Number(k), v]))
     this.fieldConfigs = new Map(fieldConfigs.map(f => [f.key, f]))
@@ -46,7 +46,7 @@ export class FormValidation {
   validateStep(
     step: number,
     formData: Record<string, any>,
-    errors: FieldErrors
+    errors: FieldErrors,
   ): {
     isValid: boolean
     missingFields: string[]
@@ -107,7 +107,7 @@ export class FormValidation {
    */
   validateField(field: string, value: any): string | undefined {
     const config = this.fieldConfigs.get(field)
-    if (!config) return undefined
+    if (!config) {return undefined}
 
     // Check required
     if (config.required) {
@@ -122,8 +122,8 @@ export class FormValidation {
     // Run custom validator
     if (config.validator) {
       const result = config.validator(value)
-      if (typeof result === 'string') return result
-      if (result === false) return `${config.label} is invalid`
+      if (typeof result === 'string') {return result}
+      if (result === false) {return `${config.label} is invalid`}
     }
 
     return undefined
@@ -151,7 +151,7 @@ export class FormValidation {
  */
 export function createFormValidation(
   stepConfigs: Record<number, StepValidationConfig>,
-  fieldConfigs: FieldConfig[]
+  fieldConfigs: FieldConfig[],
 ): FormValidation {
   return new FormValidation(stepConfigs, fieldConfigs)
 }
@@ -173,7 +173,7 @@ export function createFieldConfig(
     type?: FieldConfig['type']
     required?: boolean
     validator?: (value: any) => boolean | string
-  } = {}
+  } = {},
 ): FieldConfig {
   return {
     key,

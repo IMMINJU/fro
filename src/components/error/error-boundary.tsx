@@ -1,10 +1,10 @@
 'use client'
 
 import { Component, ReactNode } from 'react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { ApiClientError, NetworkError, ValidationError } from '@/lib/api/services'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   children: ReactNode
@@ -63,7 +63,7 @@ interface ErrorFallbackProps {
 
 function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
   const getErrorMessage = (error: Error | null) => {
-    if (!error) return 'An unknown error occurred'
+    if (!error) {return 'An unknown error occurred'}
 
     if (error instanceof ApiClientError) {
       switch (error.statusCode) {
@@ -103,7 +103,7 @@ function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
   }
 
   const getErrorTitle = (error: Error | null) => {
-    if (!error) return 'Error'
+    if (!error) {return 'Error'}
 
     if (error instanceof ApiClientError) {
       if (error.statusCode >= 500) {
@@ -126,7 +126,7 @@ function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
   }
 
   const shouldShowRetry = (error: Error | null) => {
-    if (!error) return true
+    if (!error) {return true}
 
     if (error instanceof ApiClientError) {
       // Don't show retry for client errors (except 429)

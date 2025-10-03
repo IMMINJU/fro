@@ -1,8 +1,8 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
-import { cn } from '@/lib/utils'
 import { Check } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface StepWizardContextType {
   currentStep: number
@@ -15,7 +15,7 @@ interface StepWizardContextType {
 }
 
 const StepWizardContext = createContext<StepWizardContextType | undefined>(
-  undefined
+  undefined,
 )
 
 export function useStepWizard() {
@@ -90,7 +90,7 @@ export function StepIndicator({ steps }: StepIndicatorProps) {
             className={cn(
               'relative',
               index !== steps.length - 1 ? 'pr-8 sm:pr-20' : '',
-              'flex-1'
+              'flex-1',
             )}
           >
             {index < currentStep ? (

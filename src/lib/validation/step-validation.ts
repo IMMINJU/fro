@@ -37,11 +37,11 @@ export const STEP_VALIDATION_MESSAGES = {
 export function isStepValid(
   step: number,
   formData: Record<string, any>,
-  errors: FieldErrors
+  errors: FieldErrors,
 ): boolean {
   const requiredFields = STEP_REQUIRED_FIELDS[step as keyof typeof STEP_REQUIRED_FIELDS]
 
-  if (!requiredFields) return true
+  if (!requiredFields) {return true}
 
   // Check if all required fields are filled
   const hasAllFields = requiredFields.every(field => {
@@ -70,7 +70,7 @@ export function isStepValid(
  */
 export function getCredentialFieldKeys(
   provider: string,
-  credentialType: string
+  credentialType: string,
 ): string[] {
   // AWS
   if (provider === 'AWS') {
@@ -106,15 +106,15 @@ export function getCredentialFieldKeys(
  */
 export function validateCredentialsStep(
   formData: Record<string, any>,
-  errors: FieldErrors
+  errors: FieldErrors,
 ): boolean {
   // Check credentialType first
-  if (!formData.credentialType) return false
+  if (!formData.credentialType) {return false}
 
   // Get required credential fields
   const credFieldKeys = getCredentialFieldKeys(
     formData.provider || 'AWS',
-    formData.credentialType
+    formData.credentialType,
   )
 
   // Check if all credential fields are filled
@@ -139,14 +139,14 @@ export function validateCredentialsStep(
 export function getStepValidationStatus(
   step: number,
   formData: Record<string, any>,
-  errors: FieldErrors
+  errors: FieldErrors,
 ) {
   // Special handling for credentials step
   if (step === 1) {
     const isValid = validateCredentialsStep(formData, errors)
     const credFieldKeys = getCredentialFieldKeys(
       formData.provider || 'AWS',
-      formData.credentialType
+      formData.credentialType,
     )
 
     const missingFields = ['credentialType', ...credFieldKeys].filter(field => {
@@ -158,8 +158,8 @@ export function getStepValidationStatus(
       isValid,
       missingFields,
       hasErrors: missingFields.length > 0 || Object.keys(errors).some(key =>
-        ['credentialType', ...credFieldKeys].includes(key)
-      )
+        ['credentialType', ...credFieldKeys].includes(key),
+      ),
     }
   }
 
@@ -181,6 +181,6 @@ export function getStepValidationStatus(
   return {
     isValid,
     missingFields,
-    hasErrors
+    hasErrors,
   }
 }

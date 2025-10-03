@@ -1,9 +1,9 @@
 'use client'
 
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClient } from '@/lib/query-client'
 import { useEffect } from 'react'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { queryClient } from '@/lib/query-client'
 import { GlobalLoading } from '@/components/loading/global-loading'
 
 export default function QueryProvider({
@@ -35,7 +35,7 @@ function QueryDevelopmentTools() {
         queryCount: queryClient.getQueryCache().getAll().length,
         mutationCount: queryClient.getMutationCache().getAll().length,
         cacheSize: new Blob([
-          JSON.stringify(queryClient.getQueryCache().getAll())
+          JSON.stringify(queryClient.getQueryCache().getAll()),
         ]).size,
       }
 

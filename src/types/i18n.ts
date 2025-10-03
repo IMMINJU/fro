@@ -3,10 +3,10 @@
  * Auto-generated types for translation keys with type safety
  */
 
+import type cloudEn from '../../messages/cloud/en.json'
 import type commonEn from '../../messages/common/en.json'
 import type navigationEn from '../../messages/shared/navigation/en.json'
 import type validationEn from '../../messages/shared/validation/en.json'
-import type cloudEn from '../../messages/cloud/en.json'
 
 // Merge all namespace types into a single Messages type
 export type Messages = {

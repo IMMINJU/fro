@@ -6,7 +6,10 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { Plus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Cloud } from '@/types/types'
+import { TableSkeleton } from '@/components/loading/table-skeleton'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -16,9 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Plus } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { TableSkeleton } from '@/components/loading/table-skeleton'
 
 interface CloudTableProps {
   data: Cloud[]
@@ -28,7 +28,12 @@ interface CloudTableProps {
   isLoading?: boolean
 }
 
-export function CloudTable({ data, columns, onCreateCloud, onEditCloud, isLoading = false }: CloudTableProps) {
+export function CloudTable({
+  data,
+  columns,
+  onCreateCloud,
+  isLoading = false,
+}: CloudTableProps) {
   const tCloud = useTranslations('cloud')
   const tMessages = useTranslations('cloud.messages')
 
@@ -67,9 +72,9 @@ export function CloudTable({ data, columns, onCreateCloud, onEditCloud, isLoadin
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   )
                 })}
@@ -84,7 +89,7 @@ export function CloudTable({ data, columns, onCreateCloud, onEditCloud, isLoadin
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

@@ -1,7 +1,8 @@
 'use client'
 
-import { useLocale } from 'next-intl'
 import { useRouter, usePathname } from 'next/navigation'
+import { useLocale } from 'next-intl'
+import { LOCALE_CONFIGS, type Locale } from '@/types/i18n'
 import {
   Select,
   SelectContent,
@@ -9,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { LOCALE_CONFIGS, type Locale } from '@/types/i18n'
 
 /**
  * Locale Switcher Component

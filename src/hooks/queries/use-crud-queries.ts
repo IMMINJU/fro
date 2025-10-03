@@ -8,8 +8,8 @@ import {
   UseMutationOptions,
   QueryKey,
 } from '@tanstack/react-query'
-import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { ListResponse, ApiClientError } from '@/lib/api/services'
 
 /**
@@ -22,7 +22,7 @@ export function useList<T>(
   options?: Omit<
     UseQueryOptions<ListResponse<T>, ApiClientError>,
     'queryKey' | 'queryFn'
-  >
+  >,
 ) {
   return useQuery<ListResponse<T>, ApiClientError>({
     queryKey,
@@ -39,7 +39,7 @@ export function useList<T>(
 export function useGetOne<T>(
   queryKey: QueryKey,
   fetcher: () => Promise<T>,
-  options?: Omit<UseQueryOptions<T, ApiClientError>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<T, ApiClientError>, 'queryKey' | 'queryFn'>,
 ) {
   return useQuery<T, ApiClientError>({
     queryKey,
@@ -61,7 +61,7 @@ export function useCreate<T, TCreate>(
     translationKey?: string
     onOptimisticUpdate?: (data: TCreate) => Partial<T>
     mutationOptions?: UseMutationOptions<T, ApiClientError, TCreate, { previousData: any }>
-  }
+  },
 ) {
   const queryClient = useQueryClient()
   const t = useTranslations(options?.translationKey || 'messages')
@@ -80,7 +80,7 @@ export function useCreate<T, TCreate>(
         queryClient.setQueriesData<ListResponse<T>>(
           { queryKey: invalidateKey },
           (old) => {
-            if (!old) return old
+            if (!old) {return old}
 
             const optimisticItem = {
               id: `temp-${Date.now()}`,
@@ -94,7 +94,7 @@ export function useCreate<T, TCreate>(
               items: [optimisticItem, ...old.items],
               total: old.total + 1,
             }
-          }
+          },
         )
       }
 
@@ -140,7 +140,7 @@ export function useUpdate<T extends { id: string }, TUpdate>(
       { id: string; data: Partial<TUpdate> },
       { previousData: any }
     >
-  }
+  },
 ) {
   const queryClient = useQueryClient()
   const t = useTranslations(options?.translationKey || 'messages')
@@ -162,21 +162,21 @@ export function useUpdate<T extends { id: string }, TUpdate>(
         queryClient.setQueriesData<ListResponse<T>>(
           { queryKey: invalidateKey },
           (old) => {
-            if (!old) return old
+            if (!old) {return old}
 
             return {
               ...old,
               items: old.items.map((item) =>
                 item.id === id
                   ? {
-                      ...item,
-                      ...options.onOptimisticUpdate!(id, data),
-                      updatedAt: new Date().toISOString(),
-                    }
-                  : item
+                    ...item,
+                    ...options.onOptimisticUpdate!(id, data),
+                    updatedAt: new Date().toISOString(),
+                  }
+                  : item,
               ),
             }
-          }
+          },
         )
       }
 
@@ -214,7 +214,7 @@ export function useDelete<T = void>(
   options?: {
     translationKey?: string
     mutationOptions?: UseMutationOptions<T, ApiClientError, string>
-  }
+  },
 ) {
   const queryClient = useQueryClient()
   const t = useTranslations(options?.translationKey || 'messages')

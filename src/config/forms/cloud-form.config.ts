@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { createFormConfig, createStep, createDynamicField } from '@/lib/forms/form-config'
 import { Provider } from '@/types/types'
+import { createFormConfig, createStep, createDynamicField } from '@/lib/forms/form-config'
 
 /**
  * Cloud Form Schema
@@ -76,8 +76,8 @@ export const cloudFormConfig = createFormConfig<typeof cloudFormSchema>()
       {
         description: 'Provider and identity',
         requiredFields: ['name', 'provider'],
-      }
-    )
+      },
+    ),
   )
   .addStep(
     createStep(
@@ -92,8 +92,8 @@ export const cloudFormConfig = createFormConfig<typeof cloudFormSchema>()
       {
         description: 'Authentication',
         requiredFields: ['credentialType'],
-      }
-    )
+      },
+    ),
   )
   .addStep(
     createStep(
@@ -112,8 +112,8 @@ export const cloudFormConfig = createFormConfig<typeof cloudFormSchema>()
       {
         description: 'Region selection',
         requiredFields: ['regionList'],
-      }
-    )
+      },
+    ),
   )
   .addStep(
     createStep(
@@ -135,7 +135,7 @@ export const cloudFormConfig = createFormConfig<typeof cloudFormSchema>()
       {
         description: 'Features and schedule',
         requiredFields: [],
-      }
-    )
+      },
+    ),
   )
   .build()

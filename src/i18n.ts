@@ -24,7 +24,7 @@ export type Locale = typeof locales[number]
  */
 export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as any)) notFound()
+  if (!locales.includes(locale as any)) {notFound()}
 
   // Always load: common + shared namespaces (~1KB)
   // These are small and used across all pages
@@ -77,7 +77,7 @@ export default getRequestConfig(async ({ locale }) => {
 export async function loadNamespace(locale: Locale, namespace: string) {
   try {
     return await import(`../messages/${namespace}/${locale}.json`).then(m => m.default)
-  } catch (error) {
+  } catch (_error) {
     console.warn(`Failed to load namespace: ${namespace} for locale: ${locale}`)
     return {}
   }

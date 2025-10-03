@@ -1,14 +1,11 @@
-import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import js from '@eslint/js'
 import tseslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
-import react from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
-import importPlugin from 'eslint-plugin-import'
+import unusedImports from 'eslint-plugin-unused-imports'
 import globals from 'globals'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -16,10 +13,10 @@ const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all
+  allConfig: js.configs.all,
 })
 
-export default [
+const eslintConfig = [
   // Base JavaScript configuration
   js.configs.recommended,
 
@@ -70,24 +67,24 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tseslint,
-      react: react,
-      'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y,
-      import: importPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
-      // TypeScript rules
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      // Unused imports rules
+      'no-unused-vars': 'off', // Disable base rule
+      '@typescript-eslint/no-unused-vars': 'off', // Disable TypeScript rule
+      'unused-imports/no-unused-imports': 'error', // Remove unused imports
+      'unused-imports/no-unused-vars': [
+        'warn',
         {
-          argsIgnorePattern: '^_',
+          vars: 'all',
           varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
           caughtErrorsIgnorePattern: '^_',
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/prefer-const': 'error',
-      '@typescript-eslint/no-non-null-assertion': 'warn',
 
       // React rules
       'react/prop-types': 'off', // TypeScript handles this
@@ -117,14 +114,44 @@ export default [
       'import/order': [
         'error',
         {
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            'parent',
-            'sibling',
-            'index',
+          groups: ['builtin', 'external', 'internal', ['parent', 'sibling'], 'index'],
+          pathGroups: [
+            {
+              pattern: 'react',
+              group: 'external',
+              position: 'before',
+            },
+            {
+              pattern: 'next/**',
+              group: 'external',
+              position: 'before',
+            },
+            {
+              pattern: '@/types/**',
+              group: 'internal',
+              position: 'before',
+            },
+            {
+              pattern: '@/lib/**',
+              group: 'internal',
+              position: 'before',
+            },
+            {
+              pattern: '@/hooks/**',
+              group: 'internal',
+              position: 'before',
+            },
+            {
+              pattern: '@/components/**',
+              group: 'internal',
+              position: 'before',
+            },
+            {
+              pattern: '@/**',
+              group: 'internal',
+            },
           ],
+          pathGroupsExcludedImportTypes: ['react', 'next'],
           'newlines-between': 'never',
           alphabetize: {
             order: 'asc',
@@ -136,12 +163,13 @@ export default [
       'import/no-unresolved': 'error',
 
       // General rules
-      'no-console': 'warn',
+      'no-console': 'off',
       'no-debugger': 'error',
       'no-alert': 'warn',
       'no-var': 'error',
       'prefer-const': 'error',
       'no-unused-vars': 'off', // Handled by @typescript-eslint
+      'no-undef': 'off', // TypeScript handles this
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],
 
@@ -167,12 +195,6 @@ export default [
   // JavaScript files configuration
   {
     files: ['**/*.{js,jsx}'],
-    plugins: {
-      react: react,
-      'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y,
-      import: importPlugin,
-    },
     rules: {
       // Same rules as TypeScript but without TS-specific ones
       'no-unused-vars': [
@@ -233,3 +255,5 @@ export default [
     ],
   },
 ]
+
+export default eslintConfig

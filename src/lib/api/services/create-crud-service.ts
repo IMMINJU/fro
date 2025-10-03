@@ -66,7 +66,7 @@ export function createCrudService<T, TCreate = T, TUpdate = TCreate>(
     update: (id: string, data: Partial<TUpdate>) => Promise<T>
     delete: (id: string) => Promise<void>
   },
-  config: ServiceConfig = {}
+  config: ServiceConfig = {},
 ): CrudService<T, TCreate, TUpdate> {
   const { enableDelay = true, delayMs } = config
 
@@ -103,7 +103,7 @@ export function createReadOnlyService<T>(
     list: (params?: PaginationParams & FilterParams) => Promise<ListResponse<T>>
     get: (id: string) => Promise<T>
   },
-  config: ServiceConfig = {}
+  config: ServiceConfig = {},
 ): ReadOnlyService<T> {
   const { enableDelay = true, delayMs } = config
 

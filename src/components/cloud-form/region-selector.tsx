@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
 import { Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface RegionSelectorProps {
   regions: string[]
@@ -27,23 +27,20 @@ export function RegionSelector({
 
   // Filter regions based on search
   const filteredRegions = useMemo(() => {
-    if (!searchQuery.trim()) return regions
+    if (!searchQuery.trim()) {return regions}
     const query = searchQuery.toLowerCase()
     return regions.filter((region) => region.toLowerCase().includes(query))
   }, [regions, searchQuery])
 
   const allSelected = filteredRegions.every((region) =>
-    selectedRegions.includes(region)
+    selectedRegions.includes(region),
   )
-  const someSelected =
-    filteredRegions.some((region) => selectedRegions.includes(region)) &&
-    !allSelected
 
   const handleSelectAll = () => {
     if (allSelected) {
       // Deselect all filtered regions
       onSelectionChange(
-        selectedRegions.filter((region) => !filteredRegions.includes(region))
+        selectedRegions.filter((region) => !filteredRegions.includes(region)),
       )
     } else {
       // Select all filtered regions

@@ -1,28 +1,28 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { UseFormReturn } from 'react-hook-form'
-import { GenericFormWizard } from '@/components/forms/generic-form-wizard'
-import { cloudFormConfig, cloudFormSchema } from '@/config/forms/cloud-form.config'
+import { z } from 'zod'
+import { Provider, CLOUD_GROUP_NAMES, AWSRegionList, AzureRegionList, GCPRegionList } from '@/types/types'
+import { cloudService } from '@/lib/api/services'
 import { createFormValidation } from '@/lib/validation/generic-validation'
 import { getStepValidationStatus } from '@/lib/validation/step-validation'
 import { useCreateCloud, useUpdateCloud } from '@/hooks/queries/use-cloud-queries'
-import { cloudService } from '@/lib/api/services'
+import { GenericFormWizard } from '@/components/forms/generic-form-wizard'
 import { FormSkeleton } from '@/components/loading/form-skeleton'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { cloudFormConfig, cloudFormSchema } from '@/config/forms/cloud-form.config'
 import { DynamicField } from './dynamic-field'
-import { RegionSelector } from './region-selector'
 import {
   getProviderConfig,
   getCredentialFields,
-  getEventSourceFields
+  getEventSourceFields,
 } from './provider-configs'
-import { Provider, CLOUD_GROUP_NAMES, AWSRegionList, AzureRegionList, GCPRegionList } from '@/types/types'
-import { useTranslations } from 'next-intl'
-import { z } from 'zod'
+import { RegionSelector } from './region-selector'
 
 interface CloudFormWizardProps {
   open: boolean
@@ -35,69 +35,79 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
   const t = useTranslations('common')
   const tCloud = useTranslations('cloud')
 
-  const [initializing, setInitializing] = useState(false)
+  const [loadedData, setLoadedData] = useState<any>(null)
+  const [loadError, setLoadError] = useState<Error | null>(null)
   const [currentProvider, setCurrentProvider] = useState<Provider>('AWS')
   const [currentCredentialType, setCurrentCredentialType] = useState<string>('ACCESS_KEY')
-  const [formDefaults, setFormDefaults] = useState(cloudFormConfig.defaultValues)
 
   const createMutation = useCreateCloud()
   const updateMutation = useUpdateCloud()
 
   // Load data for edit mode
   useEffect(() => {
-    if (open && mode === 'edit' && cloudId) {
-      setInitializing(true)
-      cloudService.get(cloudId)
-        .then((cloud) => {
-          setCurrentProvider(cloud.provider)
-          setCurrentCredentialType(cloud.credentialType)
+    if (!open || mode !== 'edit' || !cloudId) {
+      return
+    }
 
-          const formData: any = {
-            ...cloudFormConfig.defaultValues,
-            name: cloud.name,
-            provider: cloud.provider,
-            cloudGroupName: cloud.cloudGroupName || [],
-            eventProcessEnabled: cloud.eventProcessEnabled,
-            userActivityEnabled: cloud.userActivityEnabled,
-            scheduleScanEnabled: cloud.scheduleScanEnabled,
-            scheduleScanSetting: cloud.scheduleScanSetting,
-            regionList: cloud.regionList,
-            proxyUrl: cloud.proxyUrl || '',
-            credentialType: cloud.credentialType,
+    let cancelled = false
+
+    cloudService.get(cloudId)
+      .then((cloud) => {
+        if (cancelled) {return}
+
+        setCurrentProvider(cloud.provider)
+        setCurrentCredentialType(cloud.credentialType)
+
+        const formData: any = {
+          ...cloudFormConfig.defaultValues,
+          name: cloud.name,
+          provider: cloud.provider,
+          cloudGroupName: cloud.cloudGroupName || [],
+          eventProcessEnabled: cloud.eventProcessEnabled,
+          userActivityEnabled: cloud.userActivityEnabled,
+          scheduleScanEnabled: cloud.scheduleScanEnabled,
+          scheduleScanSetting: cloud.scheduleScanSetting,
+          regionList: cloud.regionList,
+          proxyUrl: cloud.proxyUrl || '',
+          credentialType: cloud.credentialType,
+        }
+
+        // Add credential fields
+        const credFields = getCredentialFields(cloud.provider, cloud.credentialType)
+        credFields.forEach(field => {
+          if (field.key in cloud.credentials) {
+            formData[field.key] = (cloud.credentials as any)[field.key] || ''
           }
+        })
 
-          // Add credential fields
-          const credFields = getCredentialFields(cloud.provider, cloud.credentialType)
-          credFields.forEach(field => {
-            if (field.key in cloud.credentials) {
-              formData[field.key] = (cloud.credentials as any)[field.key] || ''
+        // Add event source fields
+        if (cloud.eventSource) {
+          const eventFields = getEventSourceFields(cloud.provider)
+          eventFields.forEach(field => {
+            if (field.key in cloud.eventSource!) {
+              formData[field.key] = (cloud.eventSource as any)[field.key] || ''
             }
           })
+        }
 
-          // Add event source fields
-          if (cloud.eventSource) {
-            const eventFields = getEventSourceFields(cloud.provider)
-            eventFields.forEach(field => {
-              if (field.key in cloud.eventSource!) {
-                formData[field.key] = (cloud.eventSource as any)[field.key] || ''
-              }
-            })
-          }
+        setLoadedData(formData)
+      })
+      .catch((error) => {
+        if (cancelled) {return}
+        console.error('Failed to load cloud data:', error)
+        setLoadError(error)
+      })
 
-          setFormDefaults(formData)
-        })
-        .catch((error) => {
-          console.error('Failed to load cloud data:', error)
-        })
-        .finally(() => {
-          setInitializing(false)
-        })
-    } else if (open && mode === 'create') {
-      setFormDefaults(cloudFormConfig.defaultValues)
-      setCurrentProvider('AWS')
-      setCurrentCredentialType('ACCESS_KEY')
+    return () => {
+      cancelled = true
     }
   }, [open, mode, cloudId])
+
+  // Compute form defaults and loading state
+  const formDefaults = mode === 'create'
+    ? cloudFormConfig.defaultValues
+    : (loadedData || cloudFormConfig.defaultValues)
+  const initializing = open && mode === 'edit' && cloudId && !loadedData && !loadError
 
   // Validation system
   const validation = createFormValidation(
@@ -107,7 +117,7 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
       2: { requiredFields: ['regionList'] },
       3: { requiredFields: [] },
     },
-    cloudFormConfig.fields
+    cloudFormConfig.fields,
   )
 
   // Custom validation for step 2 (credentials with dynamic fields)
@@ -118,6 +128,15 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
     return validation.validateStep(step, formData, errors)
   }
 
+  // Memoize provider-based data at component level
+  const providerConfig = useMemo(() => getProviderConfig(currentProvider), [currentProvider])
+  const credentialFields = useMemo(
+    () => getCredentialFields(currentProvider, currentCredentialType),
+    [currentProvider, currentCredentialType],
+  )
+  const eventSourceFields = useMemo(() =>
+    getEventSourceFields(currentProvider), [currentProvider])
+
   // Render step content
   const renderStep = (step: number, form: UseFormReturn<z.infer<typeof cloudFormSchema>>) => {
     const { watch, setValue, register, formState: { errors } } = form
@@ -127,30 +146,19 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
     const watchCredentialType = watch('credentialType')
     const watchScheduleScanEnabled = watch('scheduleScanEnabled')
 
-    // Update current provider when changed
-    useEffect(() => {
-      if (watchProvider && watchProvider !== currentProvider) {
-        setCurrentProvider(watchProvider)
-        const providerConfig = getProviderConfig(watchProvider)
-        const defaultCredType = providerConfig.defaultCredentialType
-        setValue('credentialType', defaultCredType)
-        setCurrentCredentialType(defaultCredType)
-      }
-    }, [watchProvider])
+    // Handle provider changes
+    if (watchProvider && watchProvider !== currentProvider) {
+      setCurrentProvider(watchProvider)
+      const config = getProviderConfig(watchProvider)
+      const defaultCredType = config.defaultCredentialType
+      setValue('credentialType', defaultCredType)
+      setCurrentCredentialType(defaultCredType)
+    }
 
-    // Update current credential type when changed
-    useEffect(() => {
-      if (watchCredentialType && watchCredentialType !== currentCredentialType) {
-        setCurrentCredentialType(watchCredentialType)
-      }
-    }, [watchCredentialType])
-
-    const providerConfig = useMemo(() => getProviderConfig(currentProvider), [currentProvider])
-    const credentialFields = useMemo(
-      () => getCredentialFields(currentProvider, currentCredentialType),
-      [currentProvider, currentCredentialType]
-    )
-    const eventSourceFields = useMemo(() => getEventSourceFields(currentProvider), [currentProvider])
+    // Handle credential type changes
+    if (watchCredentialType && watchCredentialType !== currentCredentialType) {
+      setCurrentCredentialType(watchCredentialType)
+    }
 
     const getRegionList = (provider: Provider) => {
       switch (provider) {

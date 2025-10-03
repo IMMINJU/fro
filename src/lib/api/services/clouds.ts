@@ -1,9 +1,9 @@
-import { ListResponse, PaginationParams, FilterParams } from '../types'
 import {
   Cloud,
   CloudCreateRequest,
   CloudUpdateRequest,
 } from '@/types/types'
+import { ListResponse, PaginationParams, FilterParams } from '../types'
 import { createCrudService } from './create-crud-service'
 
 /**
@@ -28,13 +28,13 @@ export const cloudService = createCrudService<Cloud, CloudCreateRequest, CloudUp
       if (search) {
         filteredData = filteredData.filter(cloud =>
           cloud.name.toLowerCase().includes(search.toLowerCase()) ||
-          cloud.id.toLowerCase().includes(search.toLowerCase())
+          cloud.id.toLowerCase().includes(search.toLowerCase()),
         )
       }
 
       if (provider) {
         filteredData = filteredData.filter(cloud =>
-          cloud.provider === provider
+          cloud.provider === provider,
         )
       }
 
@@ -133,5 +133,5 @@ export const cloudService = createCrudService<Cloud, CloudCreateRequest, CloudUp
   },
   {
     enableDelay: true, // Mock delay for development
-  }
+  },
 )

@@ -13,7 +13,7 @@ interface DynamicFieldProps {
   value?: string
 }
 
-export function DynamicField({ field, register, errors, value }: DynamicFieldProps) {
+export function DynamicField({ field, register, errors }: DynamicFieldProps) {
   const error = errors[field.key]
   const fieldId = `field-${field.key}`
 
