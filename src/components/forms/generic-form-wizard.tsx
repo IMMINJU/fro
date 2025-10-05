@@ -192,7 +192,7 @@ export function GenericFormWizard<T extends z.ZodTypeAny, TKey extends string = 
               <WizardFooter
                 mode={mode}
                 isSubmitting={isSubmitting}
-                onCancel={() => onOpenChange(false)}
+                onCancel={() => handleDialogClose(false)}
                 formData={watch()}
                 errors={errors}
                 steps={steps}
