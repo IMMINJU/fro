@@ -2,16 +2,11 @@
 export { cloudService } from './clouds'
 
 // Export factory functions
-export { createCrudService, createReadOnlyService } from './create-crud-service'
-export type { CrudService, ReadOnlyService, ServiceConfig } from './create-crud-service'
-
-// Export utilities
-export { delay, handleError, buildUrl } from '../utils'
+export { createCrudService } from './create-crud-service'
+export type { CrudService, ServiceConfig } from './create-crud-service'
 
 // Export types
 export type {
-  ApiResponse,
-  ApiError,
   PaginationParams,
   FilterParams,
   ListResponse,

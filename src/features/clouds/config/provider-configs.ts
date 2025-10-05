@@ -270,37 +270,3 @@ export const getEventSourceFields = (provider: Provider): FieldConfig[] => {
   const config = getProviderConfig(provider)
   return config.eventSourceFields
 }
-
-// Dynamic schema generation based on provider and credential type
-export const createProviderSchema = (
-  provider: Provider,
-  credentialType: string,
-) => {
-  const credentialFields = getCredentialFields(provider, credentialType)
-  const eventSourceFields = getEventSourceFields(provider)
-
-  // Build credential schema dynamically
-  const credentialSchema: Record<string, z.ZodTypeAny> = {}
-  credentialFields.forEach(field => {
-    if (field.required) {
-      credentialSchema[field.key] = z.string().min(1, `${field.label} is required`)
-    } else {
-      credentialSchema[field.key] = z.string().optional()
-    }
-  })
-
-  // Build event source schema dynamically
-  const eventSourceSchema: Record<string, z.ZodTypeAny> = {}
-  eventSourceFields.forEach(field => {
-    if (field.required) {
-      eventSourceSchema[field.key] = z.string().min(1, `${field.label} is required`)
-    } else {
-      eventSourceSchema[field.key] = z.string().optional()
-    }
-  })
-
-  return {
-    credentialSchema: z.object(credentialSchema),
-    eventSourceSchema: z.object(eventSourceSchema),
-  }
-}

@@ -1,5 +1,11 @@
 import { ListResponse, PaginationParams, FilterParams } from '../types'
-import { delay } from '../utils'
+
+/**
+ * Delay utility for simulating API latency
+ */
+const delay = (ms: number = 300): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 /**
  * CRUD Service Type
@@ -11,15 +17,6 @@ export interface CrudService<T, TCreate, TUpdate> {
   create(data: TCreate): Promise<T>
   update(id: string, data: Partial<TUpdate>): Promise<T>
   delete(id: string): Promise<void>
-}
-
-/**
- * Read-only Service Type
- * For services that only support list and get operations
- */
-export interface ReadOnlyService<T> {
-  list(params?: PaginationParams & FilterParams): Promise<ListResponse<T>>
-  get(id: string): Promise<T>
 }
 
 /**
@@ -84,38 +81,5 @@ export function createCrudService<T, TCreate = T, TUpdate = TCreate>(
     create: (data) => withDelay(() => handlers.create(data)),
     update: (id, data) => withDelay(() => handlers.update(id, data)),
     delete: (id) => withDelay(() => handlers.delete(id)),
-  }
-}
-
-/**
- * Factory function to create a read-only service
- *
- * @example
- * ```typescript
- * const analyticsService = createReadOnlyService<Analytics>({
- *   list: async (params) => { ... },
- *   get: async (id) => { ... }
- * })
- * ```
- */
-export function createReadOnlyService<T>(
-  handlers: {
-    list: (params?: PaginationParams & FilterParams) => Promise<ListResponse<T>>
-    get: (id: string) => Promise<T>
-  },
-  config: ServiceConfig = {},
-): ReadOnlyService<T> {
-  const { enableDelay = true, delayMs } = config
-
-  const withDelay = async <R>(fn: () => Promise<R>): Promise<R> => {
-    if (enableDelay) {
-      await delay(delayMs)
-    }
-    return fn()
-  }
-
-  return {
-    list: (params) => withDelay(() => handlers.list(params)),
-    get: (id) => withDelay(() => handlers.get(id)),
   }
 }
