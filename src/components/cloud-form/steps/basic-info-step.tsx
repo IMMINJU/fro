@@ -1,22 +1,17 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 import { Provider, CLOUD_GROUP_NAMES } from '@/types/types'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
+import { useCloudFormContext } from '../cloud-form-context'
 
-interface BasicInfoStepProps {
-  form: UseFormReturn<z.infer<typeof cloudFormSchema>>
-}
-
-export function BasicInfoStep({ form }: BasicInfoStepProps) {
+export function BasicInfoStep() {
   const t = useTranslations('common')
   const tCloud = useTranslations('cloud')
+  const { form } = useCloudFormContext()
   const { watch, setValue, register, formState: { errors } } = form
 
   const watchProvider = watch('provider') as Provider

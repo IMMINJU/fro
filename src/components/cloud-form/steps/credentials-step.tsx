@@ -1,29 +1,15 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 import { DynamicField } from '../dynamic-field'
-import { getProviderConfig } from '../provider-configs'
+import { useCloudFormContext } from '../cloud-form-context'
 
-interface CredentialsStepProps {
-  form: UseFormReturn<z.infer<typeof cloudFormSchema>>
-  providerConfig: ReturnType<typeof getProviderConfig>
-  credentialFields: ReturnType<typeof import('../provider-configs').getCredentialFields>
-  eventSourceFields: ReturnType<typeof import('../provider-configs').getEventSourceFields>
-}
-
-export function CredentialsStep({
-  form,
-  providerConfig,
-  credentialFields,
-  eventSourceFields,
-}: CredentialsStepProps) {
+export function CredentialsStep() {
   const t = useTranslations('common')
   const tCloud = useTranslations('cloud')
+  const { form, providerConfig, credentialFields, eventSourceFields } = useCloudFormContext()
   const { watch, setValue, register, formState: { errors } } = form
 
   const watchCredentialType = watch('credentialType')

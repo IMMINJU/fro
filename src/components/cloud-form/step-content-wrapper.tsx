@@ -1,11 +1,9 @@
 'use client'
 
 import { useEffect } from 'react'
-import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 import { Provider } from '@/types/types'
-import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 import { getProviderConfig } from './provider-configs'
+import { useCloudFormContext } from './cloud-form-context'
 import { BasicInfoStep } from './steps/basic-info-step'
 import { CredentialsStep } from './steps/credentials-step'
 import { FeaturesStep } from './steps/features-step'
@@ -13,70 +11,36 @@ import { RegionsStep } from './steps/regions-step'
 
 interface StepContentWrapperProps {
   step: number
-  form: UseFormReturn<z.infer<typeof cloudFormSchema>>
-  currentProvider: Provider
-  currentCredentialType: string
-  setCurrentProvider: (provider: Provider) => void
-  setCurrentCredentialType: (type: string) => void
-  providerConfig: ReturnType<typeof getProviderConfig>
-  credentialFields: ReturnType<typeof import('./provider-configs').getCredentialFields>
-  eventSourceFields: ReturnType<typeof import('./provider-configs').getEventSourceFields>
 }
 
-export function StepContentWrapper({
-  step,
-  form,
-  currentProvider,
-  currentCredentialType,
-  setCurrentProvider,
-  setCurrentCredentialType,
-  providerConfig,
-  credentialFields,
-  eventSourceFields,
-}: StepContentWrapperProps) {
+export function StepContentWrapper({ step }: StepContentWrapperProps) {
+  const { form, currentProvider } = useCloudFormContext()
   const { watch, setValue } = form
 
-  // Watch for provider and credential type changes
+  // Watch for provider changes
   const watchProvider = watch('provider') as Provider
-  const watchCredentialType = watch('credentialType')
 
-  // Handle provider changes with useEffect
+  // Handle provider changes - reset credential type to default
   useEffect(() => {
     if (watchProvider && watchProvider !== currentProvider) {
-      setCurrentProvider(watchProvider)
       const config = getProviderConfig(watchProvider)
       const defaultCredType = config.defaultCredentialType
       setValue('credentialType', defaultCredType)
-      setCurrentCredentialType(defaultCredType)
     }
-  }, [watchProvider, currentProvider, setValue, setCurrentProvider, setCurrentCredentialType])
-
-  // Handle credential type changes with useEffect
-  useEffect(() => {
-    if (watchCredentialType && watchCredentialType !== currentCredentialType) {
-      setCurrentCredentialType(watchCredentialType)
-    }
-  }, [watchCredentialType, currentCredentialType, setCurrentCredentialType])
+  }, [watchProvider, currentProvider, setValue])
 
   switch (step) {
     case 0:
-      return <BasicInfoStep form={form} />
+      return <BasicInfoStep />
 
     case 1:
-      return (
-        <CredentialsStep
-          form={form}
-          providerConfig={providerConfig}
-          credentialFields={credentialFields}
-          eventSourceFields={eventSourceFields}
-        />
-      )
+      return <CredentialsStep />
 
     case 2:
-      return <RegionsStep form={form} currentProvider={currentProvider} />
+      return <RegionsStep />
 
     case 3:
-      return <FeaturesStep form={form} />
+      return <FeaturesStep />
 
     default:
       return null

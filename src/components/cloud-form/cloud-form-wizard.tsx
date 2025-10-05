@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -14,6 +14,7 @@ import { useCloudFormData } from '@/features/clouds/hooks/use-cloud-form-data'
 import { useCreateCloud, useUpdateCloud } from '@/features/clouds/hooks/use-cloud-queries'
 import { buildCloudPayload } from '@/features/clouds/utils/cloud-payload'
 import { getProviderConfig, getCredentialFields, getEventSourceFields } from './provider-configs'
+import { CloudFormProvider } from './cloud-form-context'
 import { StepContentWrapper } from './step-content-wrapper'
 
 interface CloudFormWizardProps {
@@ -26,9 +27,6 @@ interface CloudFormWizardProps {
 export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudFormWizardProps) {
   const tCloud = useTranslations('cloud')
 
-  const [currentProvider, setCurrentProvider] = useState<Provider>('AWS')
-  const [currentCredentialType, setCurrentCredentialType] = useState<string>('ACCESS_KEY')
-
   const createMutation = useCreateCloud()
   const updateMutation = useUpdateCloud()
 
@@ -37,8 +35,6 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
     open,
     mode,
     cloudId,
-    onProviderChange: setCurrentProvider,
-    onCredentialTypeChange: setCurrentCredentialType,
   })
 
   // Validation system
@@ -60,36 +56,43 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
     return validation.validateStep(step, formData, errors as any)
   }
 
-  // Memoize provider-based data at component level
-  const providerConfig = useMemo(() => getProviderConfig(currentProvider), [currentProvider])
-  const credentialFields = useMemo(
-    () => getCredentialFields(currentProvider, currentCredentialType),
-    [currentProvider, currentCredentialType],
-  )
-  const eventSourceFields = useMemo(
-    () => getEventSourceFields(currentProvider),
-    [currentProvider],
-  )
-
   // Render step content with a wrapper component to handle hooks
   const renderStep = (step: number, form: UseFormReturn<z.infer<typeof cloudFormSchema>>) => {
+    // Get current provider and credentialType from form
+    const currentProvider = form.watch('provider') as Provider || 'AWS'
+    const currentCredentialType = form.watch('credentialType') || 'ACCESS_KEY'
+
+    // Memoize provider-based data
+    const providerConfig = useMemo(() => getProviderConfig(currentProvider), [currentProvider])
+    const credentialFields = useMemo(
+      () => getCredentialFields(currentProvider, currentCredentialType),
+      [currentProvider, currentCredentialType],
+    )
+    const eventSourceFields = useMemo(
+      () => getEventSourceFields(currentProvider),
+      [currentProvider],
+    )
+
     return (
-      <StepContentWrapper
-        step={step}
-        form={form}
-        currentProvider={currentProvider}
-        currentCredentialType={currentCredentialType}
-        setCurrentProvider={setCurrentProvider}
-        setCurrentCredentialType={setCurrentCredentialType}
-        providerConfig={providerConfig}
-        credentialFields={credentialFields}
-        eventSourceFields={eventSourceFields}
-      />
+      <CloudFormProvider
+        value={{
+          form,
+          currentProvider,
+          currentCredentialType,
+          providerConfig,
+          credentialFields,
+          eventSourceFields,
+        }}
+      >
+        <StepContentWrapper step={step} />
+      </CloudFormProvider>
     )
   }
 
   // Handle form submission
   const handleSubmit = async (data: z.infer<typeof cloudFormSchema>) => {
+    const currentProvider = data.provider as Provider
+    const currentCredentialType = data.credentialType
     const payload = buildCloudPayload(data, currentProvider, currentCredentialType)
 
     if (mode === 'create') {

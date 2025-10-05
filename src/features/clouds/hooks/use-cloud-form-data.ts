@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Provider } from '@/types/types'
 import { cloudService } from '@/lib/api/services'
 import { getCredentialFields, getEventSourceFields } from '@/components/cloud-form/provider-configs'
 import { cloudFormConfig } from '@/features/clouds/config/cloud-form.config'
@@ -8,16 +7,12 @@ interface UseCloudFormDataOptions {
   open: boolean
   mode: 'create' | 'edit'
   cloudId?: string
-  onProviderChange?: (provider: Provider) => void
-  onCredentialTypeChange?: (credentialType: string) => void
 }
 
 export function useCloudFormData({
   open,
   mode,
   cloudId,
-  onProviderChange,
-  onCredentialTypeChange,
 }: UseCloudFormDataOptions) {
   const [loadedData, setLoadedData] = useState<Record<string, unknown> | null>(null)
   const [loadError, setLoadError] = useState<Error | null>(null)
@@ -45,9 +40,6 @@ export function useCloudFormData({
     cloudService.get(cloudId)
       .then((cloud) => {
         if (cancelled) {return}
-
-        onProviderChange?.(cloud.provider)
-        onCredentialTypeChange?.(cloud.credentialType)
 
         const formData: Record<string, unknown> = {
           ...cloudFormConfig.defaultValues,
@@ -92,7 +84,7 @@ export function useCloudFormData({
     return () => {
       cancelled = true
     }
-  }, [open, mode, cloudId, onProviderChange, onCredentialTypeChange])
+  }, [open, mode, cloudId])
 
   const formDefaults = mode === 'create'
     ? cloudFormConfig.defaultValues
