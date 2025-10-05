@@ -232,7 +232,7 @@ export function GenericDataTable<TData>({
                     {showCreate && onCreateClick && (
                       <>
                         <p className="text-sm text-muted-foreground mb-4">
-                          Get started by creating your first {translationKey}
+                          {t('emptyStateMessage', { item: translationKey })}
                         </p>
                         <Button onClick={onCreateClick} size="sm">
                           <Plus className="mr-2 h-4 w-4" />

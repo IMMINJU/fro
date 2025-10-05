@@ -39,6 +39,8 @@
   "scheduleSettings": "Schedule Settings",
   "eventSource": "Event Source",
   "name": "Cloud Name",
+  "updateSubtitle": "Update cloud provider configuration",
+  "emptyStateMessage": "Get started by creating your first {item}",
   "messages": {
     "createSuccess": "Cloud created successfully",
     "updateSuccess": "Cloud updated successfully",
@@ -54,8 +56,8 @@
   },
   "table": {
     "showingXOfY": "Showing {current} of {total}",
-    "rowsSelected": "{count} row(s) selected",
-    "totalItems": "Total {count} item(s)",
+    "rowsSelected": "{count, plural, =0 {No rows selected} one {# row selected} other {# rows selected}}",
+    "totalItems": "{count, plural, =0 {No items} one {# item} other {# items}}",
     "columns": "Columns",
     "copyId": "Copy Cloud ID",
     "viewDetails": "View Details"

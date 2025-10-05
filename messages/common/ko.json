@@ -23,5 +23,9 @@
   "selectAll": "전체 선택",
   "deselectAll": "전체 해제",
   "clear": "지우기",
-  "noResults": "결과 없음"
+  "noResults": "결과 없음",
+  "unsavedChanges": "저장되지 않은 변경사항",
+  "unsavedChangesMessage": "저장되지 않은 변경사항이 있습니다. 정말 닫으시겠습니까? 모든 변경사항이 손실됩니다.",
+  "continueEditing": "계속 편집",
+  "discardChanges": "변경사항 버리기"
 }

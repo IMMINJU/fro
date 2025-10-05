@@ -23,5 +23,9 @@
   "selectAll": "すべて選択",
   "deselectAll": "すべて解除",
   "clear": "クリア",
-  "noResults": "結果がありません"
+  "noResults": "結果がありません",
+  "unsavedChanges": "未保存の変更",
+  "unsavedChangesMessage": "未保存の変更があります。本当に閉じますか？すべての変更が失われます。",
+  "continueEditing": "編集を続ける",
+  "discardChanges": "変更を破棄"
 }

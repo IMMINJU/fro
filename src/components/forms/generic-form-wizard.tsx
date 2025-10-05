@@ -4,6 +4,7 @@ import { ReactNode, useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle } from 'lucide-react'
 import { useForm, UseFormReturn, FieldErrors } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 import { z } from 'zod'
 import { ButtonLoading } from '@/components/loading/global-loading'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -192,33 +193,61 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
     </Dialog>
 
     {/* Unsaved Changes Warning */}
-    <Dialog open={showUnsavedWarning} onOpenChange={setShowUnsavedWarning}>
+    <UnsavedChangesDialog
+      open={showUnsavedWarning}
+      onOpenChange={setShowUnsavedWarning}
+      onConfirm={confirmClose}
+      onCancel={cancelClose}
+    />
+  </>
+  )
+}
+
+/**
+ * Unsaved Changes Dialog Component
+ */
+interface UnsavedChangesDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onConfirm: () => void
+  onCancel: () => void
+}
+
+function UnsavedChangesDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  onCancel,
+}: UnsavedChangesDialogProps) {
+  const t = useTranslations('common')
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Unsaved Changes</DialogTitle>
+          <DialogTitle>{t('unsavedChanges')}</DialogTitle>
           <DialogDescription>
-            You have unsaved changes. Are you sure you want to close? All changes will be lost.
+            {t('unsavedChangesMessage')}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-0">
           <Button
             type="button"
             variant="outline"
-            onClick={cancelClose}
+            onClick={onCancel}
           >
-            Continue Editing
+            {t('continueEditing')}
           </Button>
           <Button
             type="button"
             variant="destructive"
-            onClick={confirmClose}
+            onClick={onConfirm}
           >
-            Discard Changes
+            {t('discardChanges')}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  </>
   )
 }
 

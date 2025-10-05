@@ -107,7 +107,7 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
       open={open}
       onOpenChange={onOpenChange}
       title={mode === 'create' ? tCloud('create') : tCloud('edit')}
-      description={mode === 'create' ? tCloud('subtitle') : 'Update cloud provider configuration'}
+      description={mode === 'create' ? tCloud('subtitle') : tCloud('updateSubtitle')}
       steps={cloudFormConfig.steps.map(s => ({
         title: s.title,
         description: s.description,

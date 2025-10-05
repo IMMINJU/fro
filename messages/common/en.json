@@ -23,5 +23,9 @@
   "selectAll": "Select All",
   "deselectAll": "Deselect All",
   "clear": "Clear",
-  "noResults": "No results found"
+  "noResults": "No results found",
+  "unsavedChanges": "Unsaved Changes",
+  "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to close? All changes will be lost.",
+  "continueEditing": "Continue Editing",
+  "discardChanges": "Discard Changes"
 }

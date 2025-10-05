@@ -39,6 +39,8 @@
   "scheduleSettings": "스케줄 설정",
   "eventSource": "이벤트 소스",
   "name": "클라우드 이름",
+  "updateSubtitle": "클라우드 제공자 구성 업데이트",
+  "emptyStateMessage": "첫 번째 {item}을(를) 생성하여 시작하세요",
   "messages": {
     "createSuccess": "클라우드가 성공적으로 생성되었습니다",
     "updateSuccess": "클라우드가 성공적으로 업데이트되었습니다",
@@ -54,8 +56,8 @@
   },
   "table": {
     "showingXOfY": "{total}개 중 {current}개 표시",
-    "rowsSelected": "{count}개 행 선택됨",
-    "totalItems": "총 {count}개 항목",
+    "rowsSelected": "{count, plural, =0 {선택된 행 없음} other {#개 행 선택됨}}",
+    "totalItems": "{count, plural, =0 {항목 없음} other {총 #개 항목}}",
     "columns": "열",
     "copyId": "클라우드 ID 복사",
     "viewDetails": "상세 보기"

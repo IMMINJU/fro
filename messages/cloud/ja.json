@@ -39,6 +39,8 @@
   "scheduleSettings": "スケジュール設定",
   "eventSource": "イベントソース",
   "name": "クラウド名",
+  "updateSubtitle": "クラウドプロバイダーの設定を更新",
+  "emptyStateMessage": "最初の{item}を作成して始めましょう",
   "messages": {
     "createSuccess": "クラウドが正常に作成されました",
     "updateSuccess": "クラウドが正常に更新されました",
@@ -54,8 +56,8 @@
   },
   "table": {
     "showingXOfY": "{total}件中{current}件を表示",
-    "rowsSelected": "{count}行が選択されています",
-    "totalItems": "合計{count}件",
+    "rowsSelected": "{count, plural, =0 {選択された行はありません} other {#行が選択されています}}",
+    "totalItems": "{count, plural, =0 {項目はありません} other {合計#件}}",
     "columns": "列",
     "copyId": "クラウドIDをコピー",
     "viewDetails": "詳細を表示"
