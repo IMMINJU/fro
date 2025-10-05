@@ -59,3 +59,35 @@ export const cloudFormSteps = [
     description: 'Features and schedule',
   },
 ]
+
+/**
+ * Cloud Field Translation Map
+ * Maps form field names to translation keys in messages/cloud/*.json
+ */
+export const cloudFieldTranslationMap: Record<string, string> = {
+  name: 'name',
+  provider: 'provider',
+  credentialType: 'credentialType',
+  regionList: 'regions',
+  cloudGroupName: 'cloudGroup',
+  eventProcessEnabled: 'eventProcessing',
+  userActivityEnabled: 'userActivity',
+  scheduleScanEnabled: 'scheduleScan',
+  accessKeyId: 'accessKeyId',
+  secretAccessKey: 'secretAccessKey',
+  roleArn: 'roleArn',
+  tenantId: 'tenantId',
+  subscriptionId: 'subscriptionId',
+  applicationId: 'applicationId',
+  secretKey: 'secretKey',
+  projectId: 'projectId',
+  jsonText: 'jsonText',
+  cloudTrailName: 'cloudTrailName',
+  storageAccountName: 'storageAccountName',
+  proxyUrl: 'proxyUrl',
+  frequency: 'frequency',
+  minute: 'minute',
+  hour: 'hour',
+  weekday: 'weekday',
+  date: 'date',
+}

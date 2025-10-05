@@ -66,6 +66,10 @@ export interface GenericFormWizardProps<T extends z.ZodTypeAny> {
   // Loading state
   isLoading?: boolean
   loadingContent?: ReactNode
+
+  // i18n configuration
+  fieldTranslationMap?: Record<string, string>
+  translationNamespace?: string
 }
 
 /**
@@ -101,6 +105,8 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
   mode = 'create',
   isLoading = false,
   loadingContent,
+  fieldTranslationMap,
+  translationNamespace = 'cloud',
 }: GenericFormWizardProps<T>) {
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
@@ -186,6 +192,8 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
               errors={errors}
               steps={steps}
               validateStep={validateStep}
+              fieldTranslationMap={fieldTranslationMap}
+              translationNamespace={translationNamespace}
             />
           </StepWizard>
         </form>
@@ -263,6 +271,8 @@ interface WizardFooterProps {
   errors: FieldErrors
   steps: WizardStep[]
   validateStep?: StepValidationFn
+  fieldTranslationMap?: Record<string, string>
+  translationNamespace?: string
 }
 
 function WizardFooter({
@@ -273,9 +283,11 @@ function WizardFooter({
   errors,
   steps,
   validateStep,
+  fieldTranslationMap,
+  translationNamespace = 'cloud',
 }: WizardFooterProps) {
   const t = useTranslations('common')
-  const tCloud = useTranslations('cloud')
+  const tDomain = useTranslations(translationNamespace)
   const { currentStep, goToPrevious, goToNext, isFirstStep, isLastStep } = useStepWizard()
   const [showValidationError, setShowValidationError] = useState(false)
 
@@ -305,43 +317,17 @@ function WizardFooter({
     : defaultValidation(currentStep)
 
   // Translate field names for error messages
-  // Map field names to existing translation keys
-  const fieldKeyMap: Record<string, string> = {
-    name: 'name',
-    provider: 'provider',
-    credentialType: 'credentialType',
-    regionList: 'regions',
-    cloudGroupName: 'cloudGroup',
-    eventProcessEnabled: 'eventProcessing',
-    userActivityEnabled: 'userActivity',
-    scheduleScanEnabled: 'scheduleScan',
-    accessKeyId: 'accessKeyId',
-    secretAccessKey: 'secretAccessKey',
-    roleArn: 'roleArn',
-    tenantId: 'tenantId',
-    subscriptionId: 'subscriptionId',
-    applicationId: 'applicationId',
-    secretKey: 'secretKey',
-    projectId: 'projectId',
-    jsonText: 'jsonText',
-    cloudTrailName: 'cloudTrailName',
-    storageAccountName: 'storageAccountName',
-    proxyUrl: 'proxyUrl',
-    frequency: 'frequency',
-    minute: 'minute',
-    hour: 'hour',
-    weekday: 'weekday',
-    date: 'date',
-  }
-
   const translatedFields = validationStatus.missingFields
     .map(field => {
-      const translationKey = fieldKeyMap[field]
-      if (translationKey) {
-        try {
-          return tCloud(translationKey)
-        } catch {
-          return field
+      // Use provided fieldTranslationMap if available
+      if (fieldTranslationMap) {
+        const translationKey = fieldTranslationMap[field]
+        if (translationKey) {
+          try {
+            return tDomain(translationKey)
+          } catch {
+            return field
+          }
         }
       }
       return field

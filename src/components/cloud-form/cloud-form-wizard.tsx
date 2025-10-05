@@ -8,7 +8,7 @@ import { createFormValidation } from '@/lib/validation/generic-validation'
 import { getStepValidationStatus } from '@/lib/validation/step-validation'
 import { GenericFormWizard } from '@/components/forms/generic-form-wizard'
 import { FormSkeleton } from '@/components/loading/form-skeleton'
-import { cloudFormSchema, cloudFormSteps } from '@/features/clouds/config/cloud-form.config'
+import { cloudFormSchema, cloudFormSteps, cloudFieldTranslationMap } from '@/features/clouds/config/cloud-form.config'
 import { useCloudFormData } from '@/features/clouds/hooks/use-cloud-form-data'
 import { useCreateCloud, useUpdateCloud } from '@/features/clouds/hooks/use-cloud-queries'
 import { buildCloudPayload } from '@/features/clouds/utils/cloud-payload'
@@ -110,6 +110,8 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
       mode={mode}
       isLoading={!!initializing}
       loadingContent={<FormSkeleton />}
+      fieldTranslationMap={cloudFieldTranslationMap}
+      translationNamespace="cloud"
     />
   )
 }
