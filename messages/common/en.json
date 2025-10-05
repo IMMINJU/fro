@@ -29,5 +29,15 @@
   "continueEditing": "Continue Editing",
   "discardChanges": "Discard Changes",
   "validationError": "Please fill in required fields: {fields}",
-  "fixErrors": "Please fix the errors before proceeding"
+  "fixErrors": "Please fix the errors before proceeding",
+  "home": "Home",
+  "clouds": "Clouds",
+  "settings": "Settings",
+  "dashboard": "Dashboard",
+  "fieldRequired": "This field is required",
+  "minLength": "Minimum length is {min} characters",
+  "maxLength": "Maximum length is {max} characters",
+  "email": "Please enter a valid email address",
+  "url": "Please enter a valid URL",
+  "atLeastOneRegion": "At least one region is required"
 }

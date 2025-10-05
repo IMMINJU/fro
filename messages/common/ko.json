@@ -29,5 +29,15 @@
   "continueEditing": "계속 편집",
   "discardChanges": "변경사항 버리기",
   "validationError": "필수 필드를 입력해주세요: {fields}",
-  "fixErrors": "계속하기 전에 오류를 수정해주세요"
+  "fixErrors": "계속하기 전에 오류를 수정해주세요",
+  "home": "홈",
+  "clouds": "클라우드",
+  "settings": "설정",
+  "dashboard": "대시보드",
+  "fieldRequired": "이 필드는 필수입니다",
+  "minLength": "최소 길이는 {min}자입니다",
+  "maxLength": "최대 길이는 {max}자입니다",
+  "email": "유효한 이메일 주소를 입력해주세요",
+  "url": "유효한 URL을 입력해주세요",
+  "atLeastOneRegion": "최소 하나의 리전이 필요합니다"
 }

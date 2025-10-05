@@ -1,8 +1,0 @@
-{
-  "required": "이 필드는 필수입니다",
-  "minLength": "최소 {min}자 이상 입력해주세요",
-  "maxLength": "최대 {max}자까지 입력 가능합니다",
-  "email": "올바른 이메일 주소를 입력해주세요",
-  "url": "올바른 URL을 입력해주세요",
-  "atLeastOneRegion": "최소 하나의 리전을 선택해주세요"
-}

@@ -29,5 +29,15 @@
   "continueEditing": "編集を続ける",
   "discardChanges": "変更を破棄",
   "validationError": "必須フィールドを入力してください: {fields}",
-  "fixErrors": "続行する前にエラーを修正してください"
+  "fixErrors": "続行する前にエラーを修正してください",
+  "home": "ホーム",
+  "clouds": "クラウド",
+  "settings": "設定",
+  "dashboard": "ダッシュボード",
+  "fieldRequired": "このフィールドは必須です",
+  "minLength": "最小文字数は{min}文字です",
+  "maxLength": "最大文字数は{max}文字です",
+  "email": "有効なメールアドレスを入力してください",
+  "url": "有効なURLを入力してください",
+  "atLeastOneRegion": "少なくとも1つのリージョンが必要です"
 }
