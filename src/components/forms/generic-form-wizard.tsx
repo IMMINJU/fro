@@ -360,14 +360,26 @@ function WizardFooter<TKey extends string = string>({
 
       <DialogFooter className="mt-6">
         <div className="flex flex-col sm:flex-row justify-between w-full gap-2 sm:gap-0">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={isFirstStep ? onCancel : handlePrevious}
-            className="w-full sm:w-auto"
-          >
-            {isFirstStep ? 'Cancel' : 'Previous'}
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            {!isFirstStep && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handlePrevious}
+                className="w-full sm:w-auto"
+              >
+                Previous
+              </Button>
+            )}
+          </div>
 
           {isLastStep ? (
             <ButtonLoading
