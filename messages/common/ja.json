@@ -27,5 +27,7 @@
   "unsavedChanges": "未保存の変更",
   "unsavedChangesMessage": "未保存の変更があります。本当に閉じますか？すべての変更が失われます。",
   "continueEditing": "編集を続ける",
-  "discardChanges": "変更を破棄"
+  "discardChanges": "変更を破棄",
+  "validationError": "必須フィールドを入力してください: {fields}",
+  "fixErrors": "続行する前にエラーを修正してください"
 }

@@ -27,5 +27,7 @@
   "unsavedChanges": "Unsaved Changes",
   "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to close? All changes will be lost.",
   "continueEditing": "Continue Editing",
-  "discardChanges": "Discard Changes"
+  "discardChanges": "Discard Changes",
+  "validationError": "Please fill in required fields: {fields}",
+  "fixErrors": "Please fix the errors before proceeding"
 }

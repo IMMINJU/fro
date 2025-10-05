@@ -274,6 +274,8 @@ function WizardFooter({
   steps,
   validateStep,
 }: WizardFooterProps) {
+  const t = useTranslations('common')
+  const tCloud = useTranslations('cloud')
   const { currentStep, goToPrevious, goToNext, isFirstStep, isLastStep } = useStepWizard()
   const [showValidationError, setShowValidationError] = useState(false)
 
@@ -302,6 +304,50 @@ function WizardFooter({
     ? validateStep(currentStep, formData, errors)
     : defaultValidation(currentStep)
 
+  // Translate field names for error messages
+  // Map field names to existing translation keys
+  const fieldKeyMap: Record<string, string> = {
+    name: 'name',
+    provider: 'provider',
+    credentialType: 'credentialType',
+    regionList: 'regions',
+    cloudGroupName: 'cloudGroup',
+    eventProcessEnabled: 'eventProcessing',
+    userActivityEnabled: 'userActivity',
+    scheduleScanEnabled: 'scheduleScan',
+    accessKeyId: 'accessKeyId',
+    secretAccessKey: 'secretAccessKey',
+    roleArn: 'roleArn',
+    tenantId: 'tenantId',
+    subscriptionId: 'subscriptionId',
+    applicationId: 'applicationId',
+    secretKey: 'secretKey',
+    projectId: 'projectId',
+    jsonText: 'jsonText',
+    cloudTrailName: 'cloudTrailName',
+    storageAccountName: 'storageAccountName',
+    proxyUrl: 'proxyUrl',
+    frequency: 'frequency',
+    minute: 'minute',
+    hour: 'hour',
+    weekday: 'weekday',
+    date: 'date',
+  }
+
+  const translatedFields = validationStatus.missingFields
+    .map(field => {
+      const translationKey = fieldKeyMap[field]
+      if (translationKey) {
+        try {
+          return tCloud(translationKey)
+        } catch {
+          return field
+        }
+      }
+      return field
+    })
+    .join(', ')
+
   const handleNext = () => {
     if (!validationStatus.isValid) {
       setShowValidationError(true)
@@ -324,8 +370,8 @@ function WizardFooter({
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {validationStatus.missingFields.length > 0
-              ? `Please fill in required fields: ${validationStatus.missingFields.join(', ')}`
-              : 'Please fix the errors before proceeding'}
+              ? t('validationError', { fields: translatedFields })
+              : t('fixErrors')}
           </AlertDescription>
         </Alert>
       )}

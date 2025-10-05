@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -61,16 +60,10 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
     const currentProvider = form.watch('provider') as Provider || 'AWS'
     const currentCredentialType = form.watch('credentialType') || 'ACCESS_KEY'
 
-    // Memoize provider-based data
-    const providerConfig = useMemo(() => getProviderConfig(currentProvider), [currentProvider])
-    const credentialFields = useMemo(
-      () => getCredentialFields(currentProvider, currentCredentialType),
-      [currentProvider, currentCredentialType],
-    )
-    const eventSourceFields = useMemo(
-      () => getEventSourceFields(currentProvider),
-      [currentProvider],
-    )
+    // Calculate provider-based data (no useMemo in render function)
+    const providerConfig = getProviderConfig(currentProvider)
+    const credentialFields = getCredentialFields(currentProvider, currentCredentialType)
+    const eventSourceFields = getEventSourceFields(currentProvider)
 
     return (
       <CloudFormProvider
