@@ -1,10 +1,8 @@
 import { z } from 'zod'
 import { Provider } from '@/types/types'
-import { createFormConfig, createStep, createDynamicField } from '@/lib/forms/form-config'
 
 /**
  * Cloud Form Schema
- * Zod schema for cloud form validation
  */
 export const cloudFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -23,7 +21,6 @@ export const cloudFormSchema = z.object({
   regionList: z.array(z.string()).min(1, 'At least one region is required'),
   proxyUrl: z.string().optional(),
   credentialType: z.string(),
-  // Dynamic credential fields will be validated separately
 }).passthrough() // Allow additional fields for credentials
 
 /**
@@ -41,101 +38,24 @@ export const cloudFormDefaults = {
 }
 
 /**
- * Cloud Form Configuration
- * Complete form configuration for Cloud Wizard
+ * Cloud Form Steps Configuration
+ * Simple array of step definitions
  */
-export const cloudFormConfig = createFormConfig<typeof cloudFormSchema>()
-  .name('cloud')
-  .title('Cloud Account')
-  .description('Configure cloud provider account')
-  .schema(cloudFormSchema)
-  .defaults(cloudFormDefaults)
-  .addStep(
-    createStep(
-      'Basic Info',
-      [
-        createDynamicField('name', 'Name', {
-          type: 'text',
-          required: true,
-          placeholder: 'Enter cloud account name',
-        }),
-        createDynamicField('provider', 'Provider', {
-          type: 'select',
-          required: true,
-          options: [
-            { value: 'AWS', label: 'AWS' },
-            { value: 'AZURE', label: 'Azure (Coming Soon)' },
-            { value: 'GCP', label: 'GCP (Coming Soon)' },
-          ],
-        }),
-        createDynamicField('cloudGroupName', 'Cloud Groups', {
-          type: 'array',
-          required: false,
-        }),
-      ],
-      {
-        description: 'Provider and identity',
-        requiredFields: ['name', 'provider'],
-      },
-    ),
-  )
-  .addStep(
-    createStep(
-      'Credentials',
-      [
-        createDynamicField('credentialType', 'Credential Type', {
-          type: 'select',
-          required: true,
-        }),
-        // Dynamic credential fields rendered in custom render function
-      ],
-      {
-        description: 'Authentication',
-        requiredFields: ['credentialType'],
-      },
-    ),
-  )
-  .addStep(
-    createStep(
-      'Regions',
-      [
-        createDynamicField('regionList', 'Regions', {
-          type: 'array',
-          required: true,
-        }),
-        createDynamicField('proxyUrl', 'Proxy URL', {
-          type: 'text',
-          required: false,
-          placeholder: 'https://proxy.company.com:8080',
-        }),
-      ],
-      {
-        description: 'Region selection',
-        requiredFields: ['regionList'],
-      },
-    ),
-  )
-  .addStep(
-    createStep(
-      'Features',
-      [
-        createDynamicField('eventProcessEnabled', 'Event Processing', {
-          type: 'checkbox',
-          required: false,
-        }),
-        createDynamicField('userActivityEnabled', 'User Activity', {
-          type: 'checkbox',
-          required: false,
-        }),
-        createDynamicField('scheduleScanEnabled', 'Schedule Scan', {
-          type: 'checkbox',
-          required: false,
-        }),
-      ],
-      {
-        description: 'Features and schedule',
-        requiredFields: [],
-      },
-    ),
-  )
-  .build()
+export const cloudFormSteps = [
+  {
+    title: 'Basic Info',
+    description: 'Provider and identity',
+  },
+  {
+    title: 'Credentials',
+    description: 'Authentication',
+  },
+  {
+    title: 'Regions',
+    description: 'Region selection',
+  },
+  {
+    title: 'Features',
+    description: 'Features and schedule',
+  },
+]

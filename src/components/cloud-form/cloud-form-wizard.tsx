@@ -9,7 +9,7 @@ import { createFormValidation } from '@/lib/validation/generic-validation'
 import { getStepValidationStatus } from '@/lib/validation/step-validation'
 import { GenericFormWizard } from '@/components/forms/generic-form-wizard'
 import { FormSkeleton } from '@/components/loading/form-skeleton'
-import { cloudFormConfig, cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
+import { cloudFormSchema, cloudFormSteps } from '@/features/clouds/config/cloud-form.config'
 import { useCloudFormData } from '@/features/clouds/hooks/use-cloud-form-data'
 import { useCreateCloud, useUpdateCloud } from '@/features/clouds/hooks/use-cloud-queries'
 import { buildCloudPayload } from '@/features/clouds/utils/cloud-payload'
@@ -37,24 +37,23 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
     cloudId,
   })
 
-  // Validation system
-  const validation = createFormValidation(
-    {
+  // Validation system (simplified - no cloudFormConfig.fields needed)
+  const validateStepFields = (step: number, formData: Record<string, unknown>, errors: unknown) => {
+    if (step === 1) {
+      return getStepValidationStatus(step, formData, errors as any)
+    }
+
+    const stepValidation = {
       0: { requiredFields: ['name', 'provider'] },
       1: { requiredFields: ['credentialType'] },
       2: { requiredFields: ['regionList'] },
       3: { requiredFields: [] },
-    },
-    cloudFormConfig.fields,
-  )
-
-  // Custom validation for step 2 (credentials with dynamic fields)
-  const validateStep = (step: number, formData: Record<string, unknown>, errors: unknown) => {
-    if (step === 1) {
-      return getStepValidationStatus(step, formData, errors as any)
     }
+
+    const validation = createFormValidation(stepValidation, [])
     return validation.validateStep(step, formData, errors as any)
   }
+
 
   // Render step content with a wrapper component to handle hooks
   const renderStep = (step: number, form: UseFormReturn<z.infer<typeof cloudFormSchema>>) => {
@@ -108,14 +107,10 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
       onOpenChange={onOpenChange}
       title={mode === 'create' ? tCloud('create') : tCloud('edit')}
       description={mode === 'create' ? tCloud('subtitle') : tCloud('updateSubtitle')}
-      steps={cloudFormConfig.steps.map(s => ({
-        title: s.title,
-        description: s.description,
-        requiredFields: s.validation.requiredFields,
-      }))}
+      steps={cloudFormSteps}
       schema={cloudFormSchema}
       defaultValues={formDefaults}
-      validateStep={validateStep}
+      validateStep={validateStepFields}
       renderStep={renderStep}
       onSubmit={handleSubmit}
       isSubmitting={createMutation.isPending || updateMutation.isPending}

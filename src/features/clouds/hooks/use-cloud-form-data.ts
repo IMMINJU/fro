@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { z } from 'zod'
 import { cloudService } from '@/lib/api/services'
 import { getCredentialFields, getEventSourceFields } from '@/components/cloud-form/provider-configs'
-import { cloudFormConfig, cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
+import { cloudFormDefaults, cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 
 interface UseCloudFormDataOptions {
   open: boolean
@@ -45,7 +45,7 @@ export function useCloudFormData({
         if (cancelled) {return}
 
         const formData: CloudFormDefaults = {
-          ...cloudFormConfig.defaultValues,
+          ...cloudFormDefaults,
           name: cloud.name,
           provider: cloud.provider,
           cloudGroupName: cloud.cloudGroupName || [],
@@ -92,8 +92,8 @@ export function useCloudFormData({
   }, [open, mode, cloudId])
 
   const formDefaults = mode === 'create'
-    ? cloudFormConfig.defaultValues
-    : (loadedData || cloudFormConfig.defaultValues)
+    ? cloudFormDefaults
+    : (loadedData || cloudFormDefaults)
 
   const initializing = open && mode === 'edit' && cloudId && !loadedData && !loadError
 

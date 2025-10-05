@@ -30,7 +30,7 @@ export {
 export { useCloudFormData } from './hooks/use-cloud-form-data'
 
 // Config
-export { cloudFormConfig, cloudFormSchema } from './config/cloud-form.config'
+export { cloudFormSchema, cloudFormDefaults, cloudFormSteps } from './config/cloud-form.config'
 
 // Utils
 export { buildCloudPayload } from './utils/cloud-payload'
