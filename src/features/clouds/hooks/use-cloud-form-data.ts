@@ -23,9 +23,22 @@ export function useCloudFormData({
   const [loadError, setLoadError] = useState<Error | null>(null)
 
   useEffect(() => {
-    if (!open || mode !== 'edit' || !cloudId) {
+    // 다이얼로그 닫힐 때 정리
+    if (!open) {
+      setLoadedData(null)
+      setLoadError(null)
       return
     }
+
+    // create 모드이거나 cloudId 없으면 초기화
+    if (mode !== 'edit' || !cloudId) {
+      setLoadedData(null)
+      return
+    }
+
+    // cloudId 변경 시 이전 데이터 초기화 (로딩 표시 트리거)
+    setLoadedData(null)
+    setLoadError(null)
 
     let cancelled = false
 
