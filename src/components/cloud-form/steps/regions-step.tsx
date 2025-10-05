@@ -4,8 +4,8 @@ import { useTranslations } from 'next-intl'
 import { getRegionList } from '@/lib/utils/region-utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RegionSelector } from '../region-selector'
 import { useCloudFormContext } from '../cloud-form-context'
+import { RegionSelector } from '../region-selector'
 
 export function RegionsStep() {
   const tCloud = useTranslations('cloud')

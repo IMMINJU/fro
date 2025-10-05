@@ -1,43 +1,7 @@
 /**
- * i18n Type Definitions - Enterprise Route-Based Structure
- * Auto-generated types for translation keys with type safety
+ * i18n Type Definitions
+ * Locale configuration and utilities
  */
-
-import type cloudEn from '../../messages/cloud/en.json'
-import type commonEn from '../../messages/common/en.json'
-import type navigationEn from '../../messages/shared/navigation/en.json'
-import type validationEn from '../../messages/shared/validation/en.json'
-
-// Merge all namespace types into a single Messages type
-export type Messages = {
-  common: typeof commonEn
-  navigation: typeof navigationEn
-  validation: typeof validationEn
-  cloud: typeof cloudEn
-}
-
-// Helper type to get nested keys
-export type NestedKeyOf<T> = T extends object
-  ? {
-      [K in keyof T]: K extends string
-        ? T[K] extends object
-          ? `${K}.${NestedKeyOf<T[K]>}` | K
-          : K
-        : never
-    }[keyof T]
-  : never
-
-// All valid translation keys
-export type TranslationKey = NestedKeyOf<Messages>
-
-// Namespace keys (top-level)
-export type Namespace = keyof Messages
-
-// Type-safe translation function signature
-export type TranslateFn<NS extends Namespace = Namespace> = (
-  key: keyof Messages[NS],
-  params?: Record<string, string | number>
-) => string
 
 // Available locales
 export type Locale = 'en' | 'ko' | 'ja'

@@ -3,8 +3,8 @@
 import { ReactNode, useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle } from 'lucide-react'
-import { useForm, UseFormReturn, FieldErrors } from 'react-hook-form'
 import { useTranslations } from 'next-intl'
+import { useForm, UseFormReturn, FieldErrors } from 'react-hook-form'
 import { z } from 'zod'
 import { ButtonLoading } from '@/components/loading/global-loading'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -37,8 +37,10 @@ export type StepValidationFn = (
 
 /**
  * Generic Form Wizard Props
+ * @template T - Zod schema type
+ * @template TKey - Translation key type (for type-safe field translation map)
  */
-export interface GenericFormWizardProps<T extends z.ZodTypeAny> {
+export interface GenericFormWizardProps<T extends z.ZodTypeAny, TKey extends string = string> {
   // Dialog props
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -68,7 +70,9 @@ export interface GenericFormWizardProps<T extends z.ZodTypeAny> {
   loadingContent?: ReactNode
 
   // i18n configuration
-  fieldTranslationMap?: Record<string, string>
+  // fieldTranslationMap: Maps form field names to translation keys
+  // TKey ensures type-safety when using auto-generated translation types
+  fieldTranslationMap?: Record<string, TKey>
   translationNamespace?: string
 }
 
@@ -90,7 +94,7 @@ export interface GenericFormWizardProps<T extends z.ZodTypeAny> {
  * />
  * ```
  */
-export function GenericFormWizard<T extends z.ZodTypeAny>({
+export function GenericFormWizard<T extends z.ZodTypeAny, TKey extends string = string>({
   open,
   onOpenChange,
   title,
@@ -107,7 +111,7 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
   loadingContent,
   fieldTranslationMap,
   translationNamespace = 'cloud',
-}: GenericFormWizardProps<T>) {
+}: GenericFormWizardProps<T, TKey>) {
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
     defaultValues,
@@ -166,48 +170,48 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
     <>
       <Dialog open={open} onOpenChange={handleDialogClose}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto sm:max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
-        </DialogHeader>
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            {description && <DialogDescription>{description}</DialogDescription>}
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
-          <StepWizard totalSteps={steps.length}>
-            {/* Step Indicator */}
-            <StepIndicator steps={steps} />
+          <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <StepWizard totalSteps={steps.length}>
+              {/* Step Indicator */}
+              <StepIndicator steps={steps} />
 
-            {/* Render each step */}
-            {steps.map((_, index) => (
-              <StepContent key={index} step={index}>
-                {renderStep(index, form)}
-              </StepContent>
-            ))}
+              {/* Render each step */}
+              {steps.map((_, index) => (
+                <StepContent key={index} step={index}>
+                  {renderStep(index, form)}
+                </StepContent>
+              ))}
 
-            {/* Wizard Footer */}
-            <WizardFooter
-              mode={mode}
-              isSubmitting={isSubmitting}
-              onCancel={() => onOpenChange(false)}
-              formData={watch()}
-              errors={errors}
-              steps={steps}
-              validateStep={validateStep}
-              fieldTranslationMap={fieldTranslationMap}
-              translationNamespace={translationNamespace}
-            />
-          </StepWizard>
-        </form>
-      </DialogContent>
-    </Dialog>
+              {/* Wizard Footer */}
+              <WizardFooter
+                mode={mode}
+                isSubmitting={isSubmitting}
+                onCancel={() => onOpenChange(false)}
+                formData={watch()}
+                errors={errors}
+                steps={steps}
+                validateStep={validateStep}
+                fieldTranslationMap={fieldTranslationMap}
+                translationNamespace={translationNamespace}
+              />
+            </StepWizard>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-    {/* Unsaved Changes Warning */}
-    <UnsavedChangesDialog
-      open={showUnsavedWarning}
-      onOpenChange={setShowUnsavedWarning}
-      onConfirm={confirmClose}
-      onCancel={cancelClose}
-    />
-  </>
+      {/* Unsaved Changes Warning */}
+      <UnsavedChangesDialog
+        open={showUnsavedWarning}
+        onOpenChange={setShowUnsavedWarning}
+        onConfirm={confirmClose}
+        onCancel={cancelClose}
+      />
+    </>
   )
 }
 
@@ -263,7 +267,7 @@ function UnsavedChangesDialog({
  * Wizard Footer Component
  * Handles navigation and validation
  */
-interface WizardFooterProps {
+interface WizardFooterProps<TKey extends string = string> {
   mode: 'create' | 'edit'
   isSubmitting: boolean
   onCancel: () => void
@@ -271,11 +275,11 @@ interface WizardFooterProps {
   errors: FieldErrors
   steps: WizardStep[]
   validateStep?: StepValidationFn
-  fieldTranslationMap?: Record<string, string>
+  fieldTranslationMap?: Record<string, TKey>
   translationNamespace?: string
 }
 
-function WizardFooter({
+function WizardFooter<TKey extends string = string>({
   mode,
   isSubmitting,
   onCancel,
@@ -285,9 +289,11 @@ function WizardFooter({
   validateStep,
   fieldTranslationMap,
   translationNamespace = 'cloud',
-}: WizardFooterProps) {
+}: WizardFooterProps<TKey>) {
   const t = useTranslations('common')
-  const tDomain = useTranslations(translationNamespace)
+  // Use type assertion for dynamic namespace
+  // (next-intl doesn't support dynamic namespaces with full type safety)
+  const tDomain = useTranslations(translationNamespace as any)
   const { currentStep, goToPrevious, goToNext, isFirstStep, isLastStep } = useStepWizard()
   const [showValidationError, setShowValidationError] = useState(false)
 
@@ -324,7 +330,8 @@ function WizardFooter({
         const translationKey = fieldTranslationMap[field]
         if (translationKey) {
           try {
-            return tDomain(translationKey)
+            // Type assertion needed for dynamic translation keys
+            return tDomain(translationKey as any)
           } catch {
             return field
           }

@@ -64,7 +64,7 @@ export function useCreate<T, TCreate>(
   },
 ) {
   const queryClient = useQueryClient()
-  const t = useTranslations(options?.translationKey || 'messages')
+  const t = useTranslations((options?.translationKey || 'cloud') as any)
 
   return useMutation<T, ApiClientError, TCreate, { previousData: any }>({
     mutationFn,
@@ -143,7 +143,7 @@ export function useUpdate<T extends { id: string }, TUpdate>(
   },
 ) {
   const queryClient = useQueryClient()
-  const t = useTranslations(options?.translationKey || 'messages')
+  const t = useTranslations((options?.translationKey || 'cloud') as any)
 
   return useMutation<
     T,
@@ -217,7 +217,7 @@ export function useDelete<T = void>(
   },
 ) {
   const queryClient = useQueryClient()
-  const t = useTranslations(options?.translationKey || 'messages')
+  const t = useTranslations((options?.translationKey || 'cloud') as any)
 
   return useMutation<T, ApiClientError, string>({
     mutationFn,

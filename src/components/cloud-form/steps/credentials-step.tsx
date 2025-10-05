@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DynamicField } from '../dynamic-field'
 import { useCloudFormContext } from '../cloud-form-context'
+import { DynamicField } from '../dynamic-field'
 
 export function CredentialsStep() {
   const t = useTranslations('common')

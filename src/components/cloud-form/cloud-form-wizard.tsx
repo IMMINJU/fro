@@ -12,9 +12,12 @@ import { cloudFormSchema, cloudFormSteps, cloudFieldTranslationMap } from '@/fea
 import { useCloudFormData } from '@/features/clouds/hooks/use-cloud-form-data'
 import { useCreateCloud, useUpdateCloud } from '@/features/clouds/hooks/use-cloud-queries'
 import { buildCloudPayload } from '@/features/clouds/utils/cloud-payload'
-import { getProviderConfig, getCredentialFields, getEventSourceFields } from './provider-configs'
 import { CloudFormProvider } from './cloud-form-context'
+import { getProviderConfig, getCredentialFields, getEventSourceFields } from './provider-configs'
 import { StepContentWrapper } from './step-content-wrapper'
+
+// Extract CloudKeys from IntlMessages (next-intl official type)
+type CloudKeys = keyof IntlMessages['cloud']
 
 interface CloudFormWizardProps {
   open: boolean
@@ -95,7 +98,7 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
   }
 
   return (
-    <GenericFormWizard
+    <GenericFormWizard<typeof cloudFormSchema, CloudKeys>
       open={open}
       onOpenChange={onOpenChange}
       title={mode === 'create' ? tCloud('create') : tCloud('edit')}

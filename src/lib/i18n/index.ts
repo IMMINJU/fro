@@ -6,4 +6,4 @@
 export { LocaleSwitcher } from './locale-switcher'
 export { loadNamespace } from '@/i18n'
 export { LOCALE_CONFIGS, getLocaleConfig } from '@/types/i18n'
-export type { Locale, LocaleConfig, TranslateFn, Namespace } from '@/types/i18n'
+export type { Locale, LocaleConfig } from '@/types/i18n'

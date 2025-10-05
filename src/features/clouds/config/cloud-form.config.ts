@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import { Provider } from '@/types/types'
 
+// Extract CloudKeys from IntlMessages (next-intl official type)
+type CloudKeys = keyof IntlMessages['cloud']
+
 /**
  * Cloud Form Schema
  */
@@ -63,8 +66,9 @@ export const cloudFormSteps = [
 /**
  * Cloud Field Translation Map
  * Maps form field names to translation keys in messages/cloud/*.json
+ * Type-safe: CloudKeys ensures all values are valid translation keys
  */
-export const cloudFieldTranslationMap: Record<string, string> = {
+export const cloudFieldTranslationMap: Record<string, CloudKeys> = {
   name: 'name',
   provider: 'provider',
   credentialType: 'credentialType',
@@ -90,4 +94,4 @@ export const cloudFieldTranslationMap: Record<string, string> = {
   hour: 'hour',
   weekday: 'weekday',
   date: 'date',
-}
+} as const

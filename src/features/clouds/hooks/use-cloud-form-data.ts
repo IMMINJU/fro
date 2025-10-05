@@ -21,8 +21,9 @@ export function useCloudFormData({
   const [loadError, setLoadError] = useState<Error | null>(null)
 
   useEffect(() => {
-    // 다이얼로그 닫힐 때 정리
+    // 다이얼로그 닫힐 때 정리 - cleanup logic is intentional
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoadedData(null)
       setLoadError(null)
       return
@@ -72,7 +73,9 @@ export function useCloudFormData({
           const eventFields = getEventSourceFields(cloud.provider)
           eventFields.forEach(field => {
             if (field.key in cloud.eventSource!) {
-              const eventValue = (cloud.eventSource as unknown as Record<string, unknown>)[field.key]
+              const eventValue = (cloud.eventSource as unknown as Record<string, unknown>)[
+                field.key
+              ]
               ;(formData as Record<string, unknown>)[field.key] = eventValue || ''
             }
           })

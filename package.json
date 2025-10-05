@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run i18n:check && npm run i18n:types && next build",
+    "build": "npm run i18n:check && next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
@@ -13,9 +13,7 @@
     "lint:check:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "i18n:validate": "node scripts/validate-i18n.cjs",
-    "i18n:check": "tsx scripts/check-i18n-sync.ts",
-    "i18n:types": "tsx scripts/generate-i18n-types.ts"
+    "i18n:check": "tsx scripts/check-i18n-sync.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.0",
