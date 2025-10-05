@@ -6,7 +6,9 @@ import { getMessages } from 'next-intl/server'
 import '../globals.css'
 import QueryProvider from '@/components/providers/query-provider'
 import { Toaster } from '@/components/ui/toaster'
-import { locales } from '@/i18n'
+import { routing } from '@/i18n/routing'
+
+const locales = routing.locales
 
 const inter = Inter({ subsets: ['latin'] })
 

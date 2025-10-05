@@ -11,8 +11,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Load all namespaces for enterprise structure
   const [common, navigation, validation, cloud] = await Promise.all([
     import(`../../messages/common/${locale}.json`).then(m => m.default),
-    import(`../../messages/shared/navigation/${locale}.json`).then(m => m.default),
-    import(`../../messages/shared/validation/${locale}.json`).then(m => m.default),
+    import(`../../messages/navigation/${locale}.json`).then(m => m.default),
+    import(`../../messages/validation/${locale}.json`).then(m => m.default),
     import(`../../messages/cloud/${locale}.json`).then(m => m.default),
   ])
 
