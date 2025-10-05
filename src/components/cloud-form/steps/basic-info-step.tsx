@@ -22,7 +22,14 @@ export function BasicInfoStep() {
         <Label htmlFor="name">{tCloud('name')} *</Label>
         <Input
           id="name"
-          {...register('name', { onBlur: () => form.trigger('name') })}
+          {...register('name', {
+            onBlur: () => form.trigger('name'),
+            onChange: () => {
+              if (errors.name) {
+                form.trigger('name')
+              }
+            },
+          })}
           placeholder={`${t('enter')} ${tCloud('name').toLowerCase()}`}
           className={errors.name ? 'border-red-500' : ''}
         />

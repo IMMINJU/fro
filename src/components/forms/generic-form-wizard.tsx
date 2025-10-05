@@ -106,7 +106,8 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
     defaultValues,
   })
 
-  const { handleSubmit, formState: { errors }, reset, watch } = form
+  const { handleSubmit, formState: { errors, isDirty }, reset, watch } = form
+  const [showUnsavedWarning, setShowUnsavedWarning] = useState(false)
 
   // Reset form when dialog opens/closes
   useEffect(() => {
@@ -114,6 +115,23 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
       reset(defaultValues)
     }
   }, [open, defaultValues, reset])
+
+  const handleDialogClose = (isOpen: boolean) => {
+    if (!isOpen && isDirty && !isSubmitting) {
+      setShowUnsavedWarning(true)
+      return
+    }
+    onOpenChange(isOpen)
+  }
+
+  const confirmClose = () => {
+    setShowUnsavedWarning(false)
+    onOpenChange(false)
+  }
+
+  const cancelClose = () => {
+    setShowUnsavedWarning(false)
+  }
 
   const handleFormSubmit = async (data: z.infer<T>) => {
     try {
@@ -126,7 +144,7 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
 
   if (isLoading && loadingContent) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={handleDialogClose}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Loading...</DialogTitle>
@@ -138,8 +156,9 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+    <>
+      <Dialog open={open} onOpenChange={handleDialogClose}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
@@ -171,6 +190,35 @@ export function GenericFormWizard<T extends z.ZodTypeAny>({
         </form>
       </DialogContent>
     </Dialog>
+
+    {/* Unsaved Changes Warning */}
+    <Dialog open={showUnsavedWarning} onOpenChange={setShowUnsavedWarning}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Unsaved Changes</DialogTitle>
+          <DialogDescription>
+            You have unsaved changes. Are you sure you want to close? All changes will be lost.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={cancelClose}
+          >
+            Continue Editing
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={confirmClose}
+          >
+            Discard Changes
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </>
   )
 }
 
@@ -254,11 +302,12 @@ function WizardFooter({
       )}
 
       <DialogFooter className="mt-6">
-        <div className="flex justify-between w-full">
+        <div className="flex flex-col sm:flex-row justify-between w-full gap-2 sm:gap-0">
           <Button
             type="button"
             variant="outline"
             onClick={isFirstStep ? onCancel : handlePrevious}
+            className="w-full sm:w-auto"
           >
             {isFirstStep ? 'Cancel' : 'Previous'}
           </Button>
@@ -268,7 +317,7 @@ function WizardFooter({
               type="submit"
               isLoading={isSubmitting}
               variant="default"
-              className="min-w-[100px]"
+              className="min-w-[100px] w-full sm:w-auto"
             >
               {mode === 'create' ? 'Create' : 'Save'}
             </ButtonLoading>
@@ -277,8 +326,7 @@ function WizardFooter({
               type="button"
               onClick={handleNext}
               variant="default"
-              className="min-w-[100px]"
-              disabled={!validationStatus.isValid}
+              className="min-w-[100px] w-full sm:w-auto"
             >
               Next
             </Button>

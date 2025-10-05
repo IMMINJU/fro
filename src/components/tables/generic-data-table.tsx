@@ -14,7 +14,7 @@ import {
   getPaginationRowModel,
   OnChangeFn,
 } from '@tanstack/react-table'
-import { Plus } from 'lucide-react'
+import { Plus, FileX } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { TableSkeleton } from '@/components/loading/table-skeleton'
 import { Button } from '@/components/ui/button'
@@ -183,10 +183,10 @@ export function GenericDataTable<TData>({
     <div className={className || 'w-full space-y-4'}>
       {/* Header with actions */}
       {(showCreate || headerActions) && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">{headerActions}</div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex items-center gap-2 w-full sm:w-auto">{headerActions}</div>
           {showCreate && onCreateClick && (
-            <Button onClick={onCreateClick} className="bg-primary hover:bg-primary/90">
+            <Button onClick={onCreateClick} className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               {displayCreateText}
             </Button>
@@ -195,7 +195,7 @@ export function GenericDataTable<TData>({
       )}
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -223,8 +223,24 @@ export function GenericDataTable<TData>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {displayEmptyMessage}
+                <TableCell colSpan={columns.length} className="h-64">
+                  <div className="flex flex-col items-center justify-center text-center py-8">
+                    <FileX className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                    <h3 className="text-lg font-semibold text-muted-foreground mb-2">
+                      {displayEmptyMessage}
+                    </h3>
+                    {showCreate && onCreateClick && (
+                      <>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Get started by creating your first {translationKey}
+                        </p>
+                        <Button onClick={onCreateClick} size="sm">
+                          <Plus className="mr-2 h-4 w-4" />
+                          {displayCreateText}
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             )}

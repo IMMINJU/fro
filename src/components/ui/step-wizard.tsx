@@ -82,15 +82,15 @@ export function StepIndicator({ steps }: StepIndicatorProps) {
   const { currentStep } = useStepWizard()
 
   return (
-    <nav aria-label="Progress">
-      <ol role="list" className="flex items-center">
+    <nav aria-label="Progress" className="px-4 sm:px-0">
+      <ol role="list" className="flex items-center overflow-x-auto pb-2">
         {steps.map((step, index) => (
           <li
             key={step.title}
             className={cn(
               'relative',
-              index !== steps.length - 1 ? 'pr-8 sm:pr-20' : '',
-              'flex-1',
+              index !== steps.length - 1 ? 'pr-6 sm:pr-12 lg:pr-20' : '',
+              'flex-shrink-0',
             )}
           >
             {index < currentStep ? (
@@ -102,9 +102,9 @@ export function StepIndicator({ steps }: StepIndicatorProps) {
                   <div className="h-0.5 w-full bg-primary" />
                 </div>
                 <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-                  <Check className="h-5 w-5 text-white" aria-hidden="true" />
+                  <Check className="h-4 w-4 sm:h-5 sm:w-5 text-white" aria-hidden="true" />
                 </div>
-                <span className="mt-2 block text-xs font-medium text-primary">
+                <span className="mt-2 block text-xs sm:text-sm font-medium text-primary whitespace-nowrap">
                   {step.title}
                 </span>
               </>
@@ -119,9 +119,9 @@ export function StepIndicator({ steps }: StepIndicatorProps) {
                   </div>
                 )}
                 <div className="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary bg-white">
-                  <span className="text-primary">{index + 1}</span>
+                  <span className="text-sm sm:text-base text-primary">{index + 1}</span>
                 </div>
-                <span className="mt-2 block text-xs font-medium text-primary">
+                <span className="mt-2 block text-xs sm:text-sm font-medium text-primary whitespace-nowrap">
                   {step.title}
                 </span>
               </>
@@ -136,9 +136,9 @@ export function StepIndicator({ steps }: StepIndicatorProps) {
                   </div>
                 )}
                 <div className="group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white">
-                  <span className="text-gray-500">{index + 1}</span>
+                  <span className="text-sm sm:text-base text-gray-500">{index + 1}</span>
                 </div>
-                <span className="mt-2 block text-xs font-medium text-gray-500">
+                <span className="mt-2 block text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">
                   {step.title}
                 </span>
               </>

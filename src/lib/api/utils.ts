@@ -3,9 +3,10 @@ import { ApiClientError, NetworkError } from './types'
 /**
  * Simulates network delay for mock APIs
  * Can be removed when using real API endpoints
+ * Ensures minimum 200ms delay to prevent skeleton flashing
  */
 export async function delay(ms?: number): Promise<void> {
-  const delayTime = ms ?? Math.random() * 500
+  const delayTime = ms ?? (200 + Math.random() * 300) // 200-500ms
   return new Promise(resolve => setTimeout(resolve, delayTime))
 }
 
