@@ -5,7 +5,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Provider } from '@/types/types'
 import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
-import { getProviderConfig, getCredentialFields, getEventSourceFields } from './provider-configs'
+import { getProviderConfig, getCredentialFields, getEventSourceFields } from '@/features/clouds/config/provider-configs'
 
 interface CloudFormContextValue {
   form: UseFormReturn<z.infer<typeof cloudFormSchema>>

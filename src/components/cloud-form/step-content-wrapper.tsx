@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react'
 import { Provider } from '@/types/types'
+import { getProviderConfig } from '@/features/clouds/config/provider-configs'
 import { useCloudFormContext } from './cloud-form-context'
-import { getProviderConfig } from './provider-configs'
 import { BasicInfoStep } from './steps/basic-info-step'
 import { CredentialsStep } from './steps/credentials-step'
 import { FeaturesStep } from './steps/features-step'

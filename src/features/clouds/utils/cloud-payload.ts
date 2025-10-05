@@ -9,8 +9,8 @@ import {
   GCPEventSource,
   CloudCreateRequest,
 } from '@/types/types'
-import { getCredentialFields, getEventSourceFields } from '@/components/cloud-form/provider-configs'
 import { cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
+import { getCredentialFields, getEventSourceFields } from '@/features/clouds/config/provider-configs'
 
 type CloudFormData = z.infer<typeof cloudFormSchema> & Record<string, unknown>
 

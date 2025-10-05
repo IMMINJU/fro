@@ -9,11 +9,11 @@ import { getStepValidationStatus } from '@/lib/validation/step-validation'
 import { GenericFormWizard } from '@/components/forms/generic-form-wizard'
 import { FormSkeleton } from '@/components/loading/form-skeleton'
 import { cloudFormSchema, cloudFormSteps, cloudFieldTranslationMap } from '@/features/clouds/config/cloud-form.config'
+import { getProviderConfig, getCredentialFields, getEventSourceFields } from '@/features/clouds/config/provider-configs'
 import { useCloudFormData } from '@/features/clouds/hooks/use-cloud-form-data'
 import { useCreateCloud, useUpdateCloud } from '@/features/clouds/hooks/use-cloud-queries'
 import { buildCloudPayload } from '@/features/clouds/utils/cloud-payload'
 import { CloudFormProvider } from './cloud-form-context'
-import { getProviderConfig, getCredentialFields, getEventSourceFields } from './provider-configs'
 import { StepContentWrapper } from './step-content-wrapper'
 
 // Extract CloudKeys from IntlMessages (next-intl official type)

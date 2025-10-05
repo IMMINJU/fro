@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { z } from 'zod'
 import { cloudService } from '@/lib/api/services'
-import { getCredentialFields, getEventSourceFields } from '@/components/cloud-form/provider-configs'
 import { cloudFormDefaults, cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
+import { getCredentialFields, getEventSourceFields } from '@/features/clouds/config/provider-configs'
 
 interface UseCloudFormDataOptions {
   open: boolean

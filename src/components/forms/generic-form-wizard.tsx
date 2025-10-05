@@ -6,6 +6,7 @@ import { AlertCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useForm, UseFormReturn, FieldErrors } from 'react-hook-form'
 import { z } from 'zod'
+import { translateFieldNames } from '@/lib/i18n/translate-fields'
 import { ButtonLoading } from '@/components/loading/global-loading'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -323,23 +324,11 @@ function WizardFooter<TKey extends string = string>({
     : defaultValidation(currentStep)
 
   // Translate field names for error messages
-  const translatedFields = validationStatus.missingFields
-    .map(field => {
-      // Use provided fieldTranslationMap if available
-      if (fieldTranslationMap) {
-        const translationKey = fieldTranslationMap[field]
-        if (translationKey) {
-          try {
-            // Type assertion needed for dynamic translation keys
-            return tDomain(translationKey as any)
-          } catch {
-            return field
-          }
-        }
-      }
-      return field
-    })
-    .join(', ')
+  const translatedFields = translateFieldNames(
+    validationStatus.missingFields,
+    fieldTranslationMap,
+    (key) => tDomain(key as any),
+  )
 
   const handleNext = () => {
     if (!validationStatus.isValid) {

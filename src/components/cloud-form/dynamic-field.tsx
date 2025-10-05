@@ -4,7 +4,7 @@ import { UseFormRegister, FieldErrors } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { FieldConfig } from './provider-configs'
+import { FieldConfig } from '@/features/clouds/config/provider-configs'
 
 interface DynamicFieldProps {
   field: FieldConfig
