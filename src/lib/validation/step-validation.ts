@@ -36,7 +36,7 @@ export const STEP_VALIDATION_MESSAGES = {
  */
 export function isStepValid(
   step: number,
-  formData: Record<string, any>,
+  formData: Record<string, unknown>,
   errors: FieldErrors,
 ): boolean {
   const requiredFields = STEP_REQUIRED_FIELDS[step as keyof typeof STEP_REQUIRED_FIELDS]
@@ -105,17 +105,17 @@ export function getCredentialFieldKeys(
  * @returns boolean - true if credentials step is valid
  */
 export function validateCredentialsStep(
-  formData: Record<string, any>,
+  formData: Record<string, unknown>,
   errors: FieldErrors,
 ): boolean {
   // Check credentialType first
   if (!formData.credentialType) {return false}
 
   // Get required credential fields
-  const credFieldKeys = getCredentialFieldKeys(
-    formData.provider || 'AWS',
-    formData.credentialType,
-  )
+  const provider = typeof formData.provider === 'string' ? formData.provider : 'AWS'
+  const credentialType = typeof formData.credentialType === 'string' ? formData.credentialType : ''
+
+  const credFieldKeys = getCredentialFieldKeys(provider, credentialType)
 
   // Check if all credential fields are filled
   const hasAllCredFields = credFieldKeys.every(key => {
@@ -138,16 +138,16 @@ export function validateCredentialsStep(
  */
 export function getStepValidationStatus(
   step: number,
-  formData: Record<string, any>,
+  formData: Record<string, unknown>,
   errors: FieldErrors,
 ) {
   // Special handling for credentials step
   if (step === 1) {
     const isValid = validateCredentialsStep(formData, errors)
-    const credFieldKeys = getCredentialFieldKeys(
-      formData.provider || 'AWS',
-      formData.credentialType,
-    )
+    const provider = typeof formData.provider === 'string' ? formData.provider : 'AWS'
+    const credentialType = typeof formData.credentialType === 'string' ? formData.credentialType : ''
+
+    const credFieldKeys = getCredentialFieldKeys(provider, credentialType)
 
     const missingFields = ['credentialType', ...credFieldKeys].filter(field => {
       const value = formData[field]

@@ -114,7 +114,7 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
         requiredFields: s.validation.requiredFields,
       }))}
       schema={cloudFormSchema}
-      defaultValues={formDefaults as any}
+      defaultValues={formDefaults}
       validateStep={validateStep}
       renderStep={renderStep}
       onSubmit={handleSubmit}

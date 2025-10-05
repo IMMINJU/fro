@@ -18,7 +18,7 @@ export interface FieldConfig {
  */
 export interface StepValidationConfig {
   requiredFields: string[]
-  customValidation?: (formData: Record<string, any>) => {
+  customValidation?: (formData: Record<string, unknown>) => {
     isValid: boolean
     errors?: Record<string, string>
   }
@@ -45,7 +45,7 @@ export class FormValidation {
    */
   validateStep(
     step: number,
-    formData: Record<string, any>,
+    formData: Record<string, unknown>,
     errors: FieldErrors,
   ): {
     isValid: boolean
@@ -82,14 +82,18 @@ export class FormValidation {
   /**
    * Get missing required fields
    */
-  private getMissingFields(requiredFields: string[], formData: Record<string, any>): string[] {
+  private getMissingFields(requiredFields: string[], formData: Record<string, unknown>): string[] {
     return requiredFields.filter(field => {
       const value = formData[field]
       const fieldConfig = this.fieldConfigs.get(field)
 
       // Array fields
-      if (fieldConfig?.type === 'array' || Array.isArray(value)) {
-        return !value || value.length === 0
+      if (fieldConfig?.type === 'array') {
+        return !value || !Array.isArray(value) || value.length === 0
+      }
+
+      if (Array.isArray(value)) {
+        return value.length === 0
       }
 
       // Boolean fields (checkbox) - always valid
@@ -132,7 +136,7 @@ export class FormValidation {
   /**
    * Get all validation errors for current form data
    */
-  getAllErrors(formData: Record<string, any>): Record<string, string> {
+  getAllErrors(formData: Record<string, unknown>): Record<string, string> {
     const errors: Record<string, string> = {}
 
     this.fieldConfigs.forEach((config, key) => {

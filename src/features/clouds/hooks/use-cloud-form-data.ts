@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { z } from 'zod'
 import { cloudService } from '@/lib/api/services'
 import { getCredentialFields, getEventSourceFields } from '@/components/cloud-form/provider-configs'
-import { cloudFormConfig } from '@/features/clouds/config/cloud-form.config'
+import { cloudFormConfig, cloudFormSchema } from '@/features/clouds/config/cloud-form.config'
 
 interface UseCloudFormDataOptions {
   open: boolean
@@ -9,12 +10,14 @@ interface UseCloudFormDataOptions {
   cloudId?: string
 }
 
+type CloudFormDefaults = z.infer<typeof cloudFormSchema>
+
 export function useCloudFormData({
   open,
   mode,
   cloudId,
 }: UseCloudFormDataOptions) {
-  const [loadedData, setLoadedData] = useState<Record<string, unknown> | null>(null)
+  const [loadedData, setLoadedData] = useState<CloudFormDefaults | null>(null)
   const [loadError, setLoadError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -41,7 +44,7 @@ export function useCloudFormData({
       .then((cloud) => {
         if (cancelled) {return}
 
-        const formData: Record<string, unknown> = {
+        const formData: CloudFormDefaults = {
           ...cloudFormConfig.defaultValues,
           name: cloud.name,
           provider: cloud.provider,
@@ -53,13 +56,14 @@ export function useCloudFormData({
           regionList: cloud.regionList,
           proxyUrl: cloud.proxyUrl || '',
           credentialType: cloud.credentialType,
-        }
+        } as CloudFormDefaults
 
         // Add credential fields
         const credFields = getCredentialFields(cloud.provider, cloud.credentialType)
         credFields.forEach(field => {
           if (field.key in cloud.credentials) {
-            formData[field.key] = (cloud.credentials as unknown as Record<string, unknown>)[field.key] || ''
+            const credValue = (cloud.credentials as unknown as Record<string, unknown>)[field.key]
+            ;(formData as Record<string, unknown>)[field.key] = credValue || ''
           }
         })
 
@@ -68,7 +72,8 @@ export function useCloudFormData({
           const eventFields = getEventSourceFields(cloud.provider)
           eventFields.forEach(field => {
             if (field.key in cloud.eventSource!) {
-              formData[field.key] = (cloud.eventSource as unknown as Record<string, unknown>)[field.key] || ''
+              const eventValue = (cloud.eventSource as unknown as Record<string, unknown>)[field.key]
+              ;(formData as Record<string, unknown>)[field.key] = eventValue || ''
             }
           })
         }

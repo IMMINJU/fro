@@ -12,6 +12,7 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import { Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -62,7 +63,7 @@ export interface GenericDataTableProps<TData> {
   pagination?: PaginationState
 
   /** Pagination change handler */
-  onPaginationChange?: (pagination: PaginationState) => void
+  onPaginationChange?: OnChangeFn<PaginationState>
 
   /** Enable sorting */
   enableSorting?: boolean
@@ -71,7 +72,7 @@ export interface GenericDataTableProps<TData> {
   sorting?: SortingState
 
   /** Sorting change handler */
-  onSortingChange?: (sorting: SortingState) => void
+  onSortingChange?: OnChangeFn<SortingState>
 
   /** Enable filtering */
   enableFiltering?: boolean
@@ -80,7 +81,7 @@ export interface GenericDataTableProps<TData> {
   columnFilters?: ColumnFiltersState
 
   /** Column filters change handler */
-  onColumnFiltersChange?: (filters: ColumnFiltersState) => void
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>
 
   /** Custom header actions (e.g., filters, search) */
   headerActions?: ReactNode
@@ -155,17 +156,17 @@ export function GenericDataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     ...(enableSorting && {
       getSortedRowModel: getSortedRowModel(),
-      onSortingChange: onSortingChange as any,
+      onSortingChange,
       state: { sorting },
     }),
     ...(enableFiltering && {
       getFilteredRowModel: getFilteredRowModel(),
-      onColumnFiltersChange: onColumnFiltersChange as any,
+      onColumnFiltersChange,
       state: { columnFilters },
     }),
     ...(enablePagination && {
       getPaginationRowModel: getPaginationRowModel(),
-      onPaginationChange: onPaginationChange as any,
+      onPaginationChange,
       state: { pagination },
     }),
   })
