@@ -1,24 +1,3 @@
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  message?: string
-  error?: string
-  errors?: Record<string, string[]>
-  meta?: {
-    total?: number
-    page?: number
-    limit?: number
-    hasNext?: boolean
-    hasPrev?: boolean
-  }
-}
-
-export interface ApiError {
-  code: string
-  message: string
-  details?: any
-  statusCode: number
-}
 
 export interface PaginationParams {
   page?: number

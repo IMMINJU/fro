@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Provider } from '@/types/types'
-import { createFormValidation } from '@/lib/validation/generic-validation'
 import { getStepValidationStatus } from '@/lib/validation/step-validation'
 import { GenericFormWizard } from '@/components/forms/generic-form-wizard'
 import { FormSkeleton } from '@/components/loading/form-skeleton'
@@ -39,21 +38,9 @@ export function CloudFormWizard({ open, onOpenChange, cloudId, mode }: CloudForm
     cloudId,
   })
 
-  // Validation system (simplified - no cloudFormConfig.fields needed)
+  // Validation system using step-validation
   const validateStepFields = (step: number, formData: Record<string, unknown>, errors: unknown) => {
-    if (step === 1) {
-      return getStepValidationStatus(step, formData, errors as any)
-    }
-
-    const stepValidation = {
-      0: { requiredFields: ['name', 'provider'] },
-      1: { requiredFields: ['credentialType'] },
-      2: { requiredFields: ['regionList'] },
-      3: { requiredFields: [] },
-    }
-
-    const validation = createFormValidation(stepValidation, [])
-    return validation.validateStep(step, formData, errors as any)
+    return getStepValidationStatus(step, formData, errors as any)
   }
 
 

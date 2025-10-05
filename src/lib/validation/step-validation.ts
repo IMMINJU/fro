@@ -1,4 +1,6 @@
 import { FieldErrors } from 'react-hook-form'
+import { Provider } from '@/types/types'
+import { getCredentialFields } from '@/features/clouds/config/provider-configs'
 
 /**
  * Step validation configuration
@@ -9,22 +11,6 @@ export const STEP_REQUIRED_FIELDS = {
   1: ['credentialType'], // Step 2: Credentials (dynamic fields handled separately)
   2: ['regionList'], // Step 3: Regions
   3: [], // Step 4: Features (all optional)
-} as const
-
-/**
- * Step validation messages
- */
-export const STEP_VALIDATION_MESSAGES = {
-  0: {
-    name: 'Name is required',
-    provider: 'Provider is required',
-  },
-  1: {
-    credentialType: 'Credential type is required',
-  },
-  2: {
-    regionList: 'At least one region is required',
-  },
 } as const
 
 /**
@@ -64,6 +50,7 @@ export function isStepValid(
 
 /**
  * Get credential field keys based on provider and credential type
+ * Uses provider-configs to get field definitions dynamically
  * @param provider - Cloud provider
  * @param credentialType - Credential type
  * @returns Array of credential field keys
@@ -72,30 +59,8 @@ export function getCredentialFieldKeys(
   provider: string,
   credentialType: string,
 ): string[] {
-  // AWS
-  if (provider === 'AWS') {
-    if (credentialType === 'ACCESS_KEY') {
-      return ['accessKeyId', 'secretAccessKey']
-    }
-    if (credentialType === 'ASSUME_ROLE') {
-      return ['roleArn', 'accessKeyId', 'secretAccessKey']
-    }
-    if (credentialType === 'ROLES_ANYWHERE') {
-      return ['roleArn', 'profileArn', 'trustAnchorArn', 'certificatePem', 'privateKeyPem']
-    }
-  }
-
-  // Azure
-  if (provider === 'AZURE' && credentialType === 'APPLICATION') {
-    return ['tenantId', 'subscriptionId', 'applicationId', 'secretKey']
-  }
-
-  // GCP
-  if (provider === 'GCP' && credentialType === 'JSON_TEXT') {
-    return ['jsonText']
-  }
-
-  return []
+  const fields = getCredentialFields(provider as Provider, credentialType)
+  return fields.map(field => field.key)
 }
 
 /**
