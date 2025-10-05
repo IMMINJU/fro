@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { getRegionList } from '@/lib/utils/region-utils'
+import { getRegionList } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCloudFormContext } from '../cloud-form-context'

@@ -16,7 +16,7 @@
  * ```
  */
 
-import { createQueryKeysMap } from './query-keys/factory'
+import { createQueryKeysMap } from './factory'
 
 /**
  * Centralized query keys map
@@ -32,7 +32,7 @@ export const queryKeys = createQueryKeysMap({
 })
 
 // Re-export individual keys for convenience
-export { cloudKeys } from './query-keys/clouds.keys'
+export { cloudKeys } from './clouds.keys'
 
 // Type helpers for query keys
 export type QueryKey = typeof queryKeys
